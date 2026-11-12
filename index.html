@@ -478,8 +478,8 @@ footer { margin-top: 32px; color: var(--on-surface-variant); font-size: 12px; li
       </button>
 
       <div id="legacyLoginBox" class="hidden" style="margin-top:12px;">
-        <label style="margin-top:4px; font-size:12px;">아이디<input id="admIdInput" class="fld" type="text" autocomplete="username" value="admin" placeholder="admin"></label>
-        <label style="margin-top:8px; font-size:12px;">비밀번호<input id="admPwInput" class="fld" type="password" autocomplete="current-password" value="admin1234" placeholder="admin1234"></label>
+        <label style="margin-top:4px; font-size:12px;">아이디<input id="admIdInput" class="fld" type="text" autocomplete="username" placeholder="관리자 아이디"></label>
+        <label style="margin-top:8px; font-size:12px;">비밀번호<input id="admPwInput" class="fld" type="password" autocomplete="current-password" placeholder="비밀번호"></label>
         <div style="margin-top:10px;">
           <button id="admLoginBtn" class="btn btn-outlined" type="button" style="width:100%;">아이디/비밀번호로 로그인</button>
         </div>
@@ -1486,13 +1486,6 @@ $("ksave").addEventListener("click", function () {
   var bad = validateKey(prov, key);
   if (bad) { m.className = "kmsg err"; m.textContent = bad; return; }
   savedKey = { provider: prov, name: name, key: key, model: $("kmodel").value.trim() || PROV[prov].model };
-  if (prov === "gemini") {
-    fetch("/api/save-key", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key: key })
-    }).catch(function() {});
-  }
   $("kval").value = "";
   m.className = "kmsg";
   m.textContent = "저장했습니다. 제공자: " + PROV[prov].label + ", 이름: " + name + ", Key: ********. 이제 이 Key로 AI를 호출합니다(모델: " + savedKey.model + ").";
@@ -1561,7 +1554,7 @@ var km = $("kmsg");
 if (km) { km.className = "kmsg"; km.textContent = "Gemini 3.8 Flash에 직접 연결되어 있습니다. (별도 설정 없이 바로 이용하실 수 있습니다)"; }
 
 // Check if an API key is available in the environment to automatically apply
-fetch("/api/get-key").then(function(r) { return r.json(); }).then(function(data) {
+fetch("/api/ai-status").then(function(r) { return r.json(); }).then(function(data) {
   if (data && data.key) {
     savedKey = {
       provider: "gemini",
@@ -1598,7 +1591,7 @@ function switchSettingsTab(tabId) {
     var gs = $("genStatCalls");
     if (gs) gs.textContent = "오늘 호출 " + calls + "회";
   } else if (tabId === "adm") {
-    var isAuth = sessionStorage.getItem("admin_auth") === "1";
+    var isAuth = !!sessionStorage.getItem("admin_token");
     checkAdminAuthState();
     if (!isAuth) {
       openAdminLoginModal();
@@ -1649,8 +1642,8 @@ $("admLoginModal").addEventListener("click", function (e) {
 
 // 관리자 모드 상태 및 폼 초기화
 function checkAdminAuthState() {
-  var isAuth = sessionStorage.getItem("admin_auth") === "1";
-  var userEmail = sessionStorage.getItem("admin_email") || "imgcut@gmail.com";
+  var isAuth = !!sessionStorage.getItem("admin_token");
+  var userEmail = sessionStorage.getItem("admin_email") || "";
   var loggedOut = $("admLoggedOutView");
   var dash = $("admDashboard");
   var emailDisp = $("admUserEmailDisplay");
@@ -1660,7 +1653,18 @@ function checkAdminAuthState() {
   if (emailDisp) emailDisp.textContent = userEmail;
 
   if (isAuth) {
-    loadAdminUI();
+    // 서버가 토큰을 인정할 때만 대시보드를 유지한다(저장값만 조작해서는 열리지 않음)
+    fetch("/api/admin/me", { headers: { Authorization: "Bearer " + sessionStorage.getItem("admin_token") } })
+      .then(function (r) {
+        if (!r.ok) throw new Error("unauthorized");
+        loadAdminUI();
+      })
+      .catch(function () {
+        sessionStorage.removeItem("admin_token");
+        sessionStorage.removeItem("admin_email");
+        if (loggedOut) loggedOut.classList.remove("hidden");
+        if (dash) dash.classList.add("hidden");
+      });
   }
 }
 
@@ -1728,54 +1732,15 @@ function renderAdminEmotions() {
   });
 }
 
-// Google 로그인 처리
+// Google 로그인: 서버 검증 미구현이라 사용하지 않는다. 아이디/비밀번호 로그인으로 안내.
 function doGoogleLogin() {
   var gmsg = $("admGoogleLoginMsg");
-  var email = "imgcut@gmail.com";
   if (gmsg) {
-    gmsg.className = "kmsg";
-    gmsg.textContent = "Google 계정 (" + email + ") 인증 중입니다…";
+    gmsg.className = "kmsg err";
+    gmsg.textContent = "Google 로그인은 아직 지원하지 않습니다. 아래 아이디/비밀번호로 로그인해 주세요.";
   }
-
-  fetch("/api/admin/google-login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: email, name: "관리자 (imgcut)" })
-  }).then(function (r) { return r.json(); }).then(function (res) {
-    if (res && res.ok) {
-      sessionStorage.setItem("admin_auth", "1");
-      sessionStorage.setItem("admin_email", email);
-      if (gmsg) {
-        gmsg.className = "kmsg";
-        gmsg.style.color = "var(--primary)";
-        gmsg.textContent = "✓ Google 로그인 성공! 관리자 대시보드로 이동합니다.";
-      }
-      setTimeout(function () {
-        closeAdminLoginModal();
-        openSettingsModal("adm");
-        checkAdminAuthState();
-      }, 400);
-    } else {
-      if (gmsg) {
-        gmsg.className = "kmsg err";
-        gmsg.textContent = (res && res.message) || "Google 로그인에 실패했습니다.";
-      }
-    }
-  }).catch(function () {
-    // Client-side fallback
-    sessionStorage.setItem("admin_auth", "1");
-    sessionStorage.setItem("admin_email", email);
-    if (gmsg) {
-      gmsg.className = "kmsg";
-      gmsg.style.color = "var(--primary)";
-      gmsg.textContent = "✓ Google 로그인 성공! 관리자 대시보드로 이동합니다.";
-    }
-    setTimeout(function () {
-      closeAdminLoginModal();
-      openSettingsModal("adm");
-      checkAdminAuthState();
-    }, 400);
-  });
+  var box = $("legacyLoginBox");
+  if (box) box.classList.remove("hidden");
 }
 
 $("googleLoginBtn").addEventListener("click", doGoogleLogin);
@@ -1795,11 +1760,13 @@ function doAdminLogin() {
   var rawId = idEl ? idEl.value.trim() : "";
   var rawPw = pwEl ? pwEl.value.trim() : "";
 
-  var id = rawId || "admin";
-  var pw = rawPw || "admin1234";
-
-  if (idEl) idEl.value = id;
-  if (pwEl) pwEl.value = pw;
+  var id = rawId;
+  var pw = rawPw;
+  if (!id || !pw) {
+    var m0 = $("admLoginMsg");
+    m0.className = "kmsg err"; m0.textContent = "아이디와 비밀번호를 입력해 주세요.";
+    return;
+  }
 
   var msg = $("admLoginMsg");
   msg.className = "kmsg"; msg.textContent = "인증 중입니다…";
@@ -1809,27 +1776,19 @@ function doAdminLogin() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: id, password: pw })
   }).then(function (r) { return r.json(); }).then(function (res) {
-    if (res && res.ok) {
-      sessionStorage.setItem("admin_auth", "1");
-      sessionStorage.setItem("admin_email", "admin (로컬 계정)");
+    if (res && res.ok && res.token) {
+      sessionStorage.setItem("admin_token", res.token);
+      sessionStorage.setItem("admin_email", "관리자 (" + id + ")");
+      if (pwEl) pwEl.value = "";
       msg.textContent = "";
       closeAdminLoginModal();
       openSettingsModal("adm");
       checkAdminAuthState();
     } else {
-      msg.className = "kmsg err"; msg.textContent = (res && res.message) || "로그인에 실패했습니다. (기본: admin / admin1234)";
+      msg.className = "kmsg err"; msg.textContent = (res && res.message) || "로그인에 실패했습니다.";
     }
   }).catch(function () {
-    if (id === "admin" && (pw === "admin1234" || pw === "admin")) {
-      sessionStorage.setItem("admin_auth", "1");
-      sessionStorage.setItem("admin_email", "admin (로컬 계정)");
-      msg.textContent = "";
-      closeAdminLoginModal();
-      openSettingsModal("adm");
-      checkAdminAuthState();
-    } else {
-      msg.className = "kmsg err"; msg.textContent = "아이디 또는 비밀번호가 올바르지 않습니다.";
-    }
+    msg.className = "kmsg err"; msg.textContent = "서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.";
   });
 }
 
@@ -1839,7 +1798,7 @@ $("admPwInput").addEventListener("keydown", function (e) { if (e.key === "Enter"
 
 // 관리자 로그아웃
 $("admLogoutBtn").addEventListener("click", function () {
-  sessionStorage.removeItem("admin_auth");
+  sessionStorage.removeItem("admin_token");
   sessionStorage.removeItem("admin_email");
   checkAdminAuthState();
 });
@@ -1882,20 +1841,31 @@ $("admSaveAllBtn").addEventListener("click", function () {
     localStorage.setItem("admin_config", JSON.stringify(adminConfig));
   } catch (e) {}
 
-  // Server persistence
+  // Server persistence (관리자 토큰 필요)
   fetch("/api/admin/config", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + (sessionStorage.getItem("admin_token") || "") },
     body: JSON.stringify(adminConfig)
-  }).catch(function () {});
+  }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); }).then(function (r) {
+    if (!r.ok) {
+      msg.className = "kmsg err";
+      msg.textContent = "서버 저장 실패: " + ((r.body && r.body.message) || "오류") + " (이 브라우저에만 적용됩니다)";
+      if (r.body && r.body.message && r.body.message.indexOf("로그인") >= 0) {
+        sessionStorage.removeItem("admin_token"); checkAdminAuthState();
+      }
+      return;
+    }
+    msg.className = "kmsg";
+    msg.textContent = "관리자 설정이 저장되고 마음 추첨기에 반영되었습니다.";
+    setTimeout(function () { msg.textContent = ""; }, 4000);
+  }).catch(function () {
+    msg.className = "kmsg err";
+    msg.textContent = "서버에 연결할 수 없어 저장하지 못했습니다.";
+  });
 
   // Update game state and lottery machine
   clearSelection();
   init();
-
-  msg.className = "kmsg";
-  msg.textContent = "관리자 설정이 성공적으로 저장되고 마음 추첨기에 즉시 반영되었습니다.";
-  setTimeout(function () { msg.textContent = ""; }, 4000);
 });
 
 // Load admin config from server on start

@@ -55,7 +55,10 @@ status가 "ok"이면 독자가 쓴 글에 어울리는 책을 정확히 {bookCou
   ]
 };
 
-const CONFIG_PATH = path.resolve(process.cwd(), 'admin-config.json');
+// ponytail: Vercel은 /tmp만 쓰기 가능(인스턴스별·임시). 영구 저장은 DB 연결 후.
+const CONFIG_PATH = process.env.VERCEL
+  ? '/tmp/admin-config.json'
+  : path.resolve(process.cwd(), 'admin-config.json');
 
 let currentConfig: AdminConfig = { ...DEFAULT_CONFIG };
 
