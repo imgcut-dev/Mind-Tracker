@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://mind-tracker-test.vercel.app/sitemap.xml
+Sitemap: https://mind-tracker-main.web.app/sitemap.xml
