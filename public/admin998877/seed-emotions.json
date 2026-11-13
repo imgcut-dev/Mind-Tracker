@@ -1,0 +1,122 @@
+[
+ {
+  "name": "외로움",
+  "color": "#B7D3F2",
+  "description": "혼자 있는 시간의 고독과 연결의 갈망",
+  "tags": [
+   "고독",
+   "쓸쓸함",
+   "혼자"
+  ],
+  "enabled": true,
+  "order": 0
+ },
+ {
+  "name": "불안",
+  "color": "#F2D49B",
+  "description": "미래에 대한 걱정과 마음의 초조함",
+  "tags": [
+   "걱정",
+   "초조",
+   "두려움"
+  ],
+  "enabled": true,
+  "order": 1
+ },
+ {
+  "name": "우울",
+  "color": "#C9C6F0",
+  "description": "가라앉은 기분과 무거워진 마음",
+  "tags": [
+   "가라앉음",
+   "공허",
+   "침울"
+  ],
+  "enabled": true,
+  "order": 2
+ },
+ {
+  "name": "분노",
+  "color": "#F2B5AD",
+  "description": "치밀어 오르는 화와 억울함",
+  "tags": [
+   "화",
+   "억울함",
+   "짜증"
+  ],
+  "enabled": true,
+  "order": 3
+ },
+ {
+  "name": "번아웃",
+  "color": "#CBD0D6",
+  "description": "에너지가 모두 소진된 탈진 상태",
+  "tags": [
+   "탈진",
+   "지침",
+   "소진"
+  ],
+  "enabled": true,
+  "order": 4
+ },
+ {
+  "name": "설렘",
+  "color": "#F2BDD6",
+  "description": "새로운 시작을 앞둔 기분 좋은 두근거림",
+  "tags": [
+   "두근거림",
+   "기대",
+   "시작"
+  ],
+  "enabled": true,
+  "order": 5
+ },
+ {
+  "name": "슬픔",
+  "color": "#A9D8E6",
+  "description": "상실과 이별로 인한 아릿한 아픔",
+  "tags": [
+   "이별",
+   "상실",
+   "눈물"
+  ],
+  "enabled": true,
+  "order": 6
+ },
+ {
+  "name": "후회",
+  "color": "#D9BFEA",
+  "description": "지난 선택에 대한 아쉬움과 자책",
+  "tags": [
+   "자책",
+   "아쉬움",
+   "미련"
+  ],
+  "enabled": true,
+  "order": 7
+ },
+ {
+  "name": "무기력",
+  "color": "#BFD8B5",
+  "description": "아무것도 하고 싶지 않은 무거운 침체",
+  "tags": [
+   "침체",
+   "귀찮음",
+   "의욕없음"
+  ],
+  "enabled": true,
+  "order": 8
+ },
+ {
+  "name": "기쁨",
+  "color": "#F4E08F",
+  "description": "마음 가득 차오르는 감사와 환희",
+  "tags": [
+   "감사",
+   "환희",
+   "행복"
+  ],
+  "enabled": true,
+  "order": 9
+ }
+]

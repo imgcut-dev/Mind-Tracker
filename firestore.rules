@@ -12,8 +12,17 @@ service cloud.firestore {
     function validBook(b) {
       return b.title is string && b.title.size() > 0 && b.title.size() <= 100
         && b.author is string && b.author.size() > 0 && b.author.size() <= 100
-        && b.emotions is list && b.emotions.size() <= 10
+        && b.emotions is list && b.emotions.size() <= 30
         && b.status in ['published', 'draft'];
+    }
+
+    function validEmotion(e) {
+      return e.name is string && e.name.size() > 0 && e.name.size() <= 20
+        && e.color is string && e.color.matches('^#[0-9a-fA-F]{6}$')
+        && e.description is string && e.description.size() <= 100
+        && e.tags is list && e.tags.size() <= 8
+        && e.enabled is bool
+        && e.order is number;
     }
 
     // 관리자 허용 목록: 본인 이메일 문서만 조회할 수 있다. 목록 조회·쓰기는 불가(추가·삭제는 콘솔에서).
@@ -30,6 +39,23 @@ service cloud.firestore {
       allow read: if resource.data.status == 'published' || isAdmin();
       allow create, update: if isAdmin() && validBook(request.resource.data);
       allow delete: if isAdmin();
+    }
+
+    // 감정 구슬: 사용 중인 감정은 누구나 읽고(메인 화면), 숨김 조회와 모든 쓰기는 관리자만 한다.
+    // 일반 사용자 쿼리는 where('enabled', '==', true)를 붙여야 한다.
+    match /emotions/{id} {
+      allow read: if resource.data.enabled == true || isAdmin();
+      allow create, update: if isAdmin() && validEmotion(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // 공개 설정(구슬 속도): config/public 문서만 누구나 읽고 관리자만 쓴다.
+    match /config/{doc} {
+      allow read: if doc == 'public';
+      allow write: if isAdmin() && doc == 'public'
+        && request.resource.data.ballSpeed is number
+        && request.resource.data.ballSpeed >= 0.3
+        && request.resource.data.ballSpeed <= 2;
     }
 
     // 나머지는 모두 거부. 컬렉션을 추가할 때 여기에 규칙을 더한다.

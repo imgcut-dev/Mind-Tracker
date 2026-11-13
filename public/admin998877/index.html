@@ -134,6 +134,20 @@
   .emos label { display: flex; align-items: center; gap: 5px; font-size: 14px; }
   .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 
+  .swatch { display: inline-block; width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); vertical-align: -3px; margin-right: 10px; }
+  .speedbox { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
+  .pv { width: 240px; height: 240px; flex: none; }
+  .speedctl { flex: 1; min-width: 240px; }
+  .speed { display: flex; align-items: center; gap: 12px; margin: 8px 0 12px; color: var(--sub); font-size: 13px; }
+  .speed input { flex: 1; accent-color: var(--plum); }
+  .speed b { min-width: 52px; text-align: right; color: var(--plum); font: 700 18px var(--serif); }
+  .colorrow { display: flex; gap: 8px; }
+  .colorrow input[type=color] { width: 44px; height: 38px; padding: 2px; flex: none; }
+  .hint2 { color: var(--sub); font-size: 12px; margin-top: 6px; }
+  td.tags { color: var(--sub); font-size: 13px; }
+  td.ord { white-space: nowrap; }
+  td.ord button { padding: 2px 8px; }
+  td.ord button + button { margin-left: 4px; }
   @media (max-width: 1100px) { .stats { grid-template-columns: repeat(2, 1fr); } .grid2 { grid-template-columns: 1fr; } }
   @media (max-width: 860px) {
     .app { grid-template-columns: 1fr; }
@@ -168,7 +182,7 @@
       <a href="#/dashboard" data-route="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>대시보드</a>
       <h4>콘텐츠</h4>
       <a href="#/books" data-route="books"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg>추천 책 DB</a>
-      <a href="#/emotions" data-route="emotions"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/></svg>감정 구슬<em>준비 중</em></a>
+      <a href="#/emotions" data-route="emotions"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/></svg>감정 구슬</a>
       <h4>연동</h4>
       <a href="#/gemini" data-route="gemini"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>Gemini API<em>준비 중</em></a>
       <a href="#/keys" data-route="keys"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg>API 키 관리<em>준비 중</em></a>
@@ -180,7 +194,7 @@
   <div class="main">
     <header class="top">
       <div><div id="crumb" class="crumb"></div><h1 id="pageTitle"></h1></div>
-      <div id="topActions"><button id="addBtnTop" class="primary" type="button">+ 책 추가</button></div>
+      <div id="topActions"><button id="addBtnTop" class="primary" type="button">+ 책 추가</button><button id="addEmoTop" class="primary" type="button" hidden>+ 감정 추가</button></div>
     </header>
 
     <!-- 대시보드 -->
@@ -242,6 +256,32 @@
       </div>
     </section>
 
+    <!-- 감정 구슬 -->
+    <section id="v-emotions" hidden>
+      <p id="emsg" class="msg" role="status"></p>
+      <div class="panel" style="margin-bottom:16px">
+        <h3>구슬 움직임</h3>
+        <p class="hint">메인 화면 유리구 안에서 구슬이 움직이는 속도입니다. 슬라이더를 움직이면 미리보기에 바로 보이고, 저장해야 사이트에 적용됩니다.</p>
+        <div class="speedbox">
+          <canvas id="pv" class="pv" aria-label="구슬 움직임 미리보기"></canvas>
+          <div class="speedctl">
+            <div class="speed"><span>느리게</span><input id="speed" type="range" min="0.3" max="2" step="0.1" value="1" aria-label="구슬 속도"><span>빠르게</span><b id="speedVal">1.0×</b></div>
+            <p class="hint" style="margin-bottom:14px">기본값은 1.0×입니다. 사용자가 마우스를 올리면 메인 화면이 자동으로 더 느려집니다.</p>
+            <button id="speedSave" class="primary" type="button">속도 저장</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="tools"><h3 style="flex:1;align-self:center">감정 목록</h3><button id="seedEmoBtn" type="button" hidden>기본 감정 10개 가져오기</button></div>
+        <table>
+          <thead><tr><th>이름</th><th>한 줄 설명</th><th>태그·유사어</th><th>공개 책</th><th>상태</th><th>순서</th><th></th></tr></thead>
+          <tbody id="emoRows"></tbody>
+        </table>
+        <div id="emoEmpty" class="empty" hidden>아직 등록된 감정이 없습니다. 기본 감정 10개를 가져오거나 직접 추가하세요.</div>
+        <p class="hint2" style="margin-top:14px">한 줄 설명은 감정의 상세 내용이고, 태그는 비슷한 말입니다. 태그는 글로 마음을 적었을 때 감정을 찾는 단서와 AI 프롬프트에 쓰도록 저장해 두며, 아직 메인 화면에는 쓰이지 않습니다. 순서는 메인 화면의 구슬 순서입니다.</p>
+      </div>
+    </section>
+
     <!-- 준비 중 화면 -->
     <section id="v-soon" hidden>
       <div class="panel soon"><h3><span id="soonName"></span> — 준비 중</h3><p>다음 단계에서 제공할 예정입니다.</p></div>
@@ -275,6 +315,27 @@
   </form>
 </dialog>
 
+<dialog id="dlg2">
+  <form id="eform" method="dialog">
+    <h2 id="edlgTitle">감정 추가</h2>
+    <label class="l" for="e-name">이름 * (20자 이하)</label><input id="e-name" type="text" maxlength="20" required>
+    <div class="f2">
+      <div><label class="l" for="e-hex">구슬 색상</label>
+        <div class="colorrow"><input id="e-color" type="color" value="#b7d3f2" aria-label="색상 선택"><input id="e-hex" type="text" maxlength="7" value="#B7D3F2" placeholder="#RRGGBB"></div></div>
+      <div><label class="l" for="e-enabled">상태</label>
+        <select id="e-enabled"><option value="true">사용</option><option value="false">숨김</option></select></div>
+    </div>
+    <label class="l" for="e-desc">한 줄 설명 (40자 이하)</label><input id="e-desc" type="text" maxlength="40" placeholder="예: 혼자 있는 시간의 고독과 연결의 갈망">
+    <label class="l" for="e-tags">태그·유사어 (쉼표로 구분, 8개 이하)</label><input id="e-tags" type="text" maxlength="100" placeholder="예: 고독, 쓸쓸함, 혼자">
+    <p class="hint2">이름을 바꾸면 이 감정을 쓰는 책의 태그도 함께 바뀝니다.</p>
+    <p id="efmsg" class="msg" role="alert"></p>
+    <div class="foot">
+      <button id="ecancel" type="button">취소</button>
+      <button id="esave" class="primary" type="submit">저장</button>
+    </div>
+  </form>
+</dialog>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -294,9 +355,13 @@ const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const setMsg = (node, text, ok) => { node.textContent = text; node.classList.toggle("ok", !!ok); };
 
-// ponytail: 감정 목록은 고정 10개. 감정 구슬 관리 화면이 생기면 거기서 읽어 온다.
-const EMOTIONS = ["외로움", "불안", "우울", "분노", "번아웃", "설렘", "슬픔", "후회", "무기력", "기쁨"];
+const DEFAULT_EMOTIONS = ["외로움", "불안", "우울", "분노", "번아웃", "설렘", "슬픔", "후회", "무기력", "기쁨"];
 const MIN_BOOKS = 3; // 한 번에 추천하는 권수(기본값)
+const emotionsCol = collection(db, "emotions");
+let emotions = []; // [{id, name, color, description, tags, enabled, order}] order 순
+let ballSpeed = 1;
+// 감정이 아직 등록되지 않았으면 기본 10개 이름으로 책 화면을 쓴다.
+const emoNames = () => (emotions.length ? emotions.map((e) => e.name) : DEFAULT_EMOTIONS);
 
 /* ---------- 로그인 ---------- */
 function show(name) {
@@ -354,7 +419,7 @@ $("out").addEventListener("click", () => signOut(auth));
 
 /* ---------- 라우팅 (#/dashboard, #/books ...) ---------- */
 const TITLES = { dashboard: "대시보드", books: "추천 책 DB", emotions: "감정 구슬", gemini: "Gemini API 연동", keys: "API 키 관리", shops: "쇼핑몰 연동" };
-const LIVE = ["dashboard", "books"];
+const LIVE = ["dashboard", "books", "emotions"];
 
 function route() {
   const key = location.hash.replace(/^#\/?/, "") || "dashboard";
@@ -362,13 +427,16 @@ function route() {
   for (const a of document.querySelectorAll(".nav a")) a.classList.toggle("on", a.dataset.route === r);
   $("v-dashboard").hidden = r !== "dashboard";
   $("v-books").hidden = r !== "books";
+  $("v-emotions").hidden = r !== "emotions";
   $("v-soon").hidden = LIVE.includes(r);
   $("topActions").hidden = !LIVE.includes(r);
+  $("addBtnTop").hidden = r === "emotions";
+  $("addEmoTop").hidden = r !== "emotions";
   $("pageTitle").textContent = TITLES[r];
   $("crumb").textContent = "관리자 / " + TITLES[r];
   $("soonName").textContent = TITLES[r];
   document.title = TITLES[r] + " · 관리자";
-  if (LIVE.includes(r)) loadBooks();
+  if (LIVE.includes(r)) loadAll();
 }
 window.addEventListener("hashchange", () => { if (auth.currentUser) route(); });
 
@@ -378,20 +446,25 @@ let books = []; // [{id, ...data}]
 const ms = (b) => b.updatedAt?.toMillis?.() ?? 0;
 const fmtDate = (b) => (ms(b) ? new Date(ms(b)).toLocaleDateString("ko-KR") : "–");
 
-async function loadBooks() {
-  const msgs = [$("dmsg"), $("bmsg")];
+async function loadAll() {
+  const msgs = [$("dmsg"), $("bmsg"), $("emsg")];
   msgs.forEach((m) => setMsg(m, "불러오는 중…"));
   try {
-    const snap = await getDocs(booksCol);
-    books = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const [bs, es, cfg] = await Promise.all([getDocs(booksCol), getDocs(emotionsCol), getDoc(doc(db, "config", "public"))]);
+    books = bs.docs.map((d) => ({ id: d.id, ...d.data() }));
     books.sort((a, b) => a.title.localeCompare(b.title, "ko"));
+    emotions = es.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const sp = cfg.exists() ? cfg.data().ballSpeed : null;
+    ballSpeed = typeof sp === "number" ? sp : 1;
     msgs.forEach((m) => setMsg(m, ""));
     $("dbState").textContent = "정상"; $("dbState").className = "pill ok";
+    refreshEmoFilter();
     renderDashboard();
     renderBooks();
+    renderEmotions();
   } catch (e) {
     console.error(e);
-    msgs.forEach((m) => setMsg(m, "책 목록을 불러오지 못했습니다. (" + (e.code || e.message) + ")"));
+    msgs.forEach((m) => setMsg(m, "데이터를 불러오지 못했습니다. (" + (e.code || e.message) + ")"));
     $("dbState").textContent = "오류"; $("dbState").className = "pill";
   }
 }
@@ -400,14 +473,14 @@ async function loadBooks() {
 function renderDashboard() {
   const published = books.filter((b) => b.status === "published");
   const count = (name) => published.filter((b) => (b.emotions || []).includes(name)).length;
-  const counts = EMOTIONS.map((name) => [name, count(name)]);
+  const counts = emoNames().map((name) => [name, count(name)]);
   const max = Math.max(1, ...counts.map(([, n]) => n));
 
   const setStat = (id, n, unit) => { const b = $(id); b.textContent = n; b.append(el("span", null, unit)); };
   setStat("s-total", books.length, "권");
   setStat("s-pub", published.length, "권");
   setStat("s-draft", books.length - published.length, "권");
-  setStat("s-cover", counts.filter(([, n]) => n > 0).length, "/ 10");
+  setStat("s-cover", counts.filter(([, n]) => n > 0).length, "/ " + counts.length);
   $("emptyBanner").hidden = books.length > 0;
 
   const bars = $("bars");
@@ -443,7 +516,12 @@ function renderDashboard() {
 }
 
 /* ---------- 책 테이블 ---------- */
-for (const name of EMOTIONS) $("fe").append(new Option(name, name));
+function refreshEmoFilter() {
+  const cur = $("fe").value;
+  $("fe").replaceChildren(new Option("감정 전체", ""));
+  for (const name of emoNames()) $("fe").append(new Option(name, name));
+  $("fe").value = cur;
+}
 for (const id of ["q", "fs", "fe"]) $(id).addEventListener("input", renderBooks);
 
 function renderBooks() {
@@ -481,7 +559,7 @@ async function removeBook(b) {
   if (!confirm("'" + b.title + "'을(를) 삭제할까요? 되돌릴 수 없습니다.")) return;
   try {
     await deleteDoc(doc(db, "books", b.id));
-    await loadBooks();
+    await loadAll();
   } catch (e) {
     setMsg($("bmsg"), "삭제하지 못했습니다. (" + (e.code || e.message) + ")");
   }
@@ -498,7 +576,7 @@ $("seedBtn").addEventListener("click", async () => {
       batch.set(doc(booksCol), { ...b, createdAt: serverTimestamp(), updatedAt: serverTimestamp(), updatedBy: auth.currentUser.email });
     }
     await batch.commit();
-    await loadBooks();
+    await loadAll();
     setMsg($("bmsg"), seed.length + "권을 가져왔습니다.", true);
   } catch (e) {
     console.error(e);
@@ -510,12 +588,18 @@ $("seedBtn").addEventListener("click", async () => {
 
 /* ---------- 등록·수정 폼 ---------- */
 let editingId = null;
-for (const name of EMOTIONS) {
-  const l = document.createElement("label");
-  const c = document.createElement("input");
-  c.type = "checkbox"; c.value = name;
-  l.append(c, name);
-  $("emos").append(l);
+function buildEmoChecks(selected) {
+  const box = $("emos");
+  box.replaceChildren();
+  // 목록에서 사라진 감정이 책에 남아 있으면 그것도 보여 줘서 저장할 때 조용히 지워지지 않게 한다.
+  const names = [...emoNames(), ...selected.filter((x) => !emoNames().includes(x))];
+  for (const name of names) {
+    const l = document.createElement("label");
+    const c = document.createElement("input");
+    c.type = "checkbox"; c.value = name; c.checked = selected.includes(name);
+    l.append(c, name);
+    box.append(l);
+  }
 }
 
 function openForm(b) {
@@ -530,7 +614,7 @@ function openForm(b) {
   $("f-keywords").value = (b?.keywords ?? []).join(", ");
   $("f-reasons").value = (b?.reasons ?? []).join("\n");
   $("f-status").value = b?.status ?? "published";
-  for (const c of $("emos").querySelectorAll("input")) c.checked = (b?.emotions ?? []).includes(c.value);
+  buildEmoChecks(b?.emotions ?? []);
   setMsg($("fmsg"), "");
   $("dlg").showModal();
 }
@@ -564,7 +648,7 @@ $("form").addEventListener("submit", async (ev) => {
     if (editingId) await setDoc(doc(db, "books", editingId), data, { merge: true });
     else await addDoc(booksCol, { ...data, createdAt: serverTimestamp() });
     $("dlg").close();
-    await loadBooks();
+    await loadAll();
     setMsg($("bmsg"), "저장했습니다.", true);
   } catch (e) {
     console.error(e);
@@ -573,6 +657,229 @@ $("form").addEventListener("submit", async (ev) => {
     $("save").disabled = false;
   }
 });
+
+/* ---------- 감정 구슬 ---------- */
+const HEX = /^#[0-9a-fA-F]{6}$/;
+const MAX_EMOTIONS = 30;
+let editingEmoId = null;
+const stamp = () => ({ updatedAt: serverTimestamp(), updatedBy: auth.currentUser.email });
+const publishedCount = (name) => books.filter((b) => b.status === "published" && (b.emotions || []).includes(name)).length;
+const showSpeed = () => { $("speedVal").textContent = ballSpeed.toFixed(1) + "×"; };
+
+function renderEmotions() {
+  const tbody = $("emoRows");
+  tbody.replaceChildren();
+  emotions.forEach((e, i) => {
+    const tr = el("tr");
+    const name = el("td");
+    const dot = el("span", "swatch"); dot.style.background = e.color;
+    name.append(dot, el("span", "t", e.name));
+    const st = el("td"); st.append(el("span", "pill " + (e.enabled ? "ok" : "wait"), e.enabled ? "사용" : "숨김"));
+    const ord = el("td", "ord");
+    const up = el("button", "small", "↑"); up.type = "button"; up.disabled = i === 0; up.setAttribute("aria-label", "위로");
+    up.addEventListener("click", () => moveEmotion(i, -1));
+    const dn = el("button", "small", "↓"); dn.type = "button"; dn.disabled = i === emotions.length - 1; dn.setAttribute("aria-label", "아래로");
+    dn.addEventListener("click", () => moveEmotion(i, 1));
+    ord.append(up, dn);
+    const act = el("td", "act");
+    const edit = el("button", "small", "수정"); edit.type = "button";
+    edit.addEventListener("click", () => openEmoForm(e));
+    const del = el("button", "small danger", "삭제"); del.type = "button";
+    del.addEventListener("click", () => removeEmotion(e));
+    act.append(edit, del);
+    tr.append(name, el("td", null, e.description || "–"), el("td", "tags", (e.tags || []).join(", ") || "–"),
+      el("td", null, publishedCount(e.name) + "권"), st, ord, act);
+    tbody.append(tr);
+  });
+  $("emoEmpty").hidden = emotions.length > 0;
+  $("seedEmoBtn").hidden = emotions.length > 0;
+  $("speed").value = ballSpeed;
+  showSpeed();
+  pvBuild();
+}
+
+// 이름이 바뀌거나 감정이 지워질 때 책의 감정 태그도 같이 고친다(batch 한 번에 500건까지).
+function retagBooks(batch, oldName, newName) {
+  for (const b of books) {
+    if (!(b.emotions || []).includes(oldName)) continue;
+    const list = b.emotions.filter((x) => x !== oldName);
+    if (newName) list.push(newName);
+    batch.update(doc(db, "books", b.id), { emotions: list, ...stamp() });
+  }
+}
+
+async function moveEmotion(i, d) {
+  const j = i + d;
+  if (j < 0 || j >= emotions.length) return;
+  const list = [...emotions];
+  [list[i], list[j]] = [list[j], list[i]];
+  try {
+    const batch = writeBatch(db);
+    list.forEach((e, idx) => { if (e.order !== idx) batch.update(doc(db, "emotions", e.id), { order: idx, ...stamp() }); });
+    await batch.commit();
+    await loadAll();
+  } catch (e) {
+    setMsg($("emsg"), "순서를 바꾸지 못했습니다. (" + (e.code || e.message) + ")");
+  }
+}
+
+async function removeEmotion(e) {
+  const n = books.filter((b) => (b.emotions || []).includes(e.name)).length;
+  const warn = n ? "\n이 감정을 쓰는 책 " + n + "권에서도 태그가 함께 제거됩니다." : "";
+  if (!confirm("'" + e.name + "' 감정을 삭제할까요?" + warn + "\n되돌릴 수 없습니다. 잠시 숨기려면 '수정'에서 상태를 숨김으로 바꾸세요.")) return;
+  try {
+    const batch = writeBatch(db);
+    batch.delete(doc(db, "emotions", e.id));
+    retagBooks(batch, e.name, null);
+    await batch.commit();
+    await loadAll();
+    setMsg($("emsg"), "삭제했습니다.", true);
+  } catch (err) {
+    setMsg($("emsg"), "삭제하지 못했습니다. (" + (err.code || err.message) + ")");
+  }
+}
+
+function openEmoForm(e) {
+  if (!e && emotions.length >= MAX_EMOTIONS) return setMsg($("emsg"), "감정은 최대 " + MAX_EMOTIONS + "개까지 등록할 수 있습니다.");
+  editingEmoId = e ? e.id : null;
+  $("edlgTitle").textContent = e ? "감정 수정" : "감정 추가";
+  const color = (e?.color ?? "#B7D3F2");
+  $("e-name").value = e?.name ?? "";
+  $("e-color").value = color.toLowerCase();
+  $("e-hex").value = color.toUpperCase();
+  $("e-enabled").value = String(e ? e.enabled : true);
+  $("e-desc").value = e?.description ?? "";
+  $("e-tags").value = (e?.tags ?? []).join(", ");
+  setMsg($("efmsg"), "");
+  $("dlg2").showModal();
+}
+$("addEmoTop").addEventListener("click", () => openEmoForm(null));
+$("ecancel").addEventListener("click", () => $("dlg2").close());
+$("e-color").addEventListener("input", () => { $("e-hex").value = $("e-color").value.toUpperCase(); });
+$("e-hex").addEventListener("input", () => { if (HEX.test($("e-hex").value)) $("e-color").value = $("e-hex").value.toLowerCase(); });
+
+$("eform").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const name = $("e-name").value.trim();
+  const color = $("e-hex").value.trim().toUpperCase();
+  if (!HEX.test(color)) return setMsg($("efmsg"), "색상은 #RRGGBB 형식이어야 합니다. 예: #B7D3F2");
+  if (emotions.some((e) => e.id !== editingEmoId && e.name === name)) return setMsg($("efmsg"), "같은 이름의 감정이 이미 있습니다.");
+  const prev = emotions.find((e) => e.id === editingEmoId);
+  const data = {
+    name, color,
+    description: $("e-desc").value.trim(),
+    tags: $("e-tags").value.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 8),
+    enabled: $("e-enabled").value === "true",
+    order: prev ? prev.order : emotions.length,
+    ...stamp()
+  };
+  $("esave").disabled = true;
+  try {
+    const batch = writeBatch(db);
+    batch.set(prev ? doc(db, "emotions", prev.id) : doc(emotionsCol), prev ? data : { ...data, createdAt: serverTimestamp() }, { merge: true });
+    if (prev && prev.name !== name) retagBooks(batch, prev.name, name);
+    await batch.commit();
+    $("dlg2").close();
+    await loadAll();
+    setMsg($("emsg"), "저장했습니다.", true);
+  } catch (e) {
+    console.error(e);
+    setMsg($("efmsg"), "저장하지 못했습니다. (" + (e.code || e.message) + ")");
+  } finally {
+    $("esave").disabled = false;
+  }
+});
+
+$("seedEmoBtn").addEventListener("click", async () => {
+  $("seedEmoBtn").disabled = true;
+  setMsg($("emsg"), "가져오는 중…");
+  try {
+    const seed = await (await fetch("./seed-emotions.json")).json();
+    const batch = writeBatch(db);
+    for (const e of seed) batch.set(doc(emotionsCol), { ...e, createdAt: serverTimestamp(), ...stamp() });
+    await batch.commit();
+    await loadAll();
+    setMsg($("emsg"), seed.length + "개를 가져왔습니다.", true);
+  } catch (e) {
+    console.error(e);
+    setMsg($("emsg"), "가져오지 못했습니다. (" + (e.code || e.message) + ")");
+  } finally {
+    $("seedEmoBtn").disabled = false;
+  }
+});
+
+/* 구슬 속도: 슬라이더를 움직이면 미리보기에 바로 반영, 저장해야 사이트에 적용 */
+$("speed").addEventListener("input", () => { ballSpeed = Number($("speed").value); showSpeed(); });
+$("speedSave").addEventListener("click", async () => {
+  try {
+    await setDoc(doc(db, "config", "public"), { ballSpeed, ...stamp() }, { merge: true });
+    setMsg($("emsg"), "속도를 " + ballSpeed.toFixed(1) + "×로 저장했습니다.", true);
+  } catch (e) {
+    setMsg($("emsg"), "저장하지 못했습니다. (" + (e.code || e.message) + ")");
+  }
+});
+
+/* 미리보기 유리구: 메인 화면 step()의 물리 규칙을 그대로 옮긴 것이다(속도 배율 ts만 슬라이더 값). */
+const PV = { S: 240, R: 0, BR: 0, balls: [] };
+const pvCv = $("pv"), pvCtx = pvCv.getContext("2d");
+{
+  const dpr = window.devicePixelRatio || 1;
+  pvCv.width = PV.S * dpr; pvCv.height = PV.S * dpr;
+  pvCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  PV.R = PV.S / 2 - 4; PV.BR = Math.round(PV.S * 0.088);
+}
+function pvBuild() {
+  const C = PV.S / 2;
+  PV.balls = emotions.filter((e) => e.enabled).map((e) => {
+    const a = Math.random() * Math.PI * 2, d = Math.random() * PV.R * 0.6;
+    return { x: C + Math.cos(a) * d, y: C + Math.sin(a) * d, vx: (Math.random() - .5) * 1.5, vy: (Math.random() - .5) * 1.5, r: PV.BR, e };
+  });
+}
+function pvStep() {
+  const C = PV.S / 2, R = PV.R, ts = ballSpeed, bs = PV.balls;
+  for (const b of bs) {
+    b.vy += 0.03;
+    if (b.y > C + R * 0.3) b.vy -= (0.12 + Math.random() * 0.14) * Math.max(0, 1 - Math.abs(b.x - C) / (R * 0.55));
+    b.vx += (Math.random() - .5) * 0.08;
+    const sp = Math.hypot(b.vx, b.vy);
+    if (sp > 2) { b.vx *= 2 / sp; b.vy *= 2 / sp; }
+    b.x += b.vx * ts; b.y += b.vy * ts;
+    const dx = b.x - C, dy = b.y - C, d = Math.hypot(dx, dy) || 0.01;
+    if (d + b.r > R) {
+      const nx = dx / d, ny = dy / d;
+      b.x = C + nx * (R - b.r); b.y = C + ny * (R - b.r);
+      const dot = b.vx * nx + b.vy * ny;
+      if (dot > 0) { b.vx -= 1.9 * dot * nx; b.vy -= 1.9 * dot * ny; }
+    }
+  }
+  for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) {
+    const p = bs[i], q = bs[j], dx = q.x - p.x, dy = q.y - p.y, m = p.r + q.r, d2 = dx * dx + dy * dy;
+    if (d2 < m * m) {
+      const d = Math.sqrt(d2) || 0.01, nx = dx / d, ny = dy / d, ov = m - d;
+      p.x -= nx * ov / 2; p.y -= ny * ov / 2; q.x += nx * ov / 2; q.y += ny * ov / 2;
+      const rel = (p.vx - q.vx) * nx + (p.vy - q.vy) * ny;
+      if (rel > 0) { p.vx -= rel * nx; p.vy -= rel * ny; q.vx += rel * nx; q.vy += rel * ny; }
+    }
+  }
+}
+function pvDraw() {
+  const C = PV.S / 2, c = pvCtx;
+  c.clearRect(0, 0, PV.S, PV.S);
+  c.beginPath(); c.arc(C, C, PV.R, 0, 6.2832); c.fillStyle = "#e8eff0"; c.fill();
+  for (const b of PV.balls) {
+    c.beginPath(); c.arc(b.x, b.y, b.r, 0, 6.2832); c.fillStyle = b.e.color; c.fill();
+    c.lineWidth = 1; c.strokeStyle = "rgba(0,0,0,.12)"; c.stroke();
+    c.fillStyle = "#161d1e"; c.textAlign = "center"; c.textBaseline = "middle";
+    c.font = "500 " + Math.round(b.r * (b.e.name.length > 2 ? .5 : .62)) + "px 'IBM Plex Sans KR', sans-serif";
+    c.fillText(b.e.name, b.x, b.y + 1);
+  }
+  c.lineWidth = 2; c.strokeStyle = "#8b9799"; c.beginPath(); c.arc(C, C, PV.R, 0, 6.2832); c.stroke();
+}
+(function pvLoop() {
+  requestAnimationFrame(pvLoop);
+  if ($("app").hidden || $("v-emotions").hidden || document.hidden) return;
+  pvStep(); pvDraw();
+})();
 </script>
 </body>
 </html>
