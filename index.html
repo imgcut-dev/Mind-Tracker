@@ -402,9 +402,6 @@ footer { margin-top: 32px; color: var(--on-surface-variant); font-size: 12px; li
 <main>
   <div class="top">
     <h1>지금 마음에 필요한 책 한 권</h1>
-    <button id="gear" class="icon-btn" type="button" aria-label="설정" title="설정" aria-expanded="false" aria-controls="settingsModal">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    </button>
   </div>
 
   <p class="sub" id="sub"></p>
@@ -1751,7 +1748,7 @@ function openSettingsModal(tabId) {
   var s = $("settingsModal");
   if (s) {
     s.classList.remove("hidden");
-    $("gear").setAttribute("aria-expanded", "true");
+    if ($("gear")) $("gear").setAttribute("aria-expanded", "true");
     if (tabId) {
       switchSettingsTab(tabId);
     }
@@ -1762,11 +1759,11 @@ function closeSettingsModal() {
   var s = $("settingsModal");
   if (s) {
     s.classList.add("hidden");
-    $("gear").setAttribute("aria-expanded", "false");
+    if ($("gear")) $("gear").setAttribute("aria-expanded", "false");
   }
 }
 
-$("gear").addEventListener("click", function () {
+if ($("gear")) $("gear").addEventListener("click", function () {
   var s = $("settingsModal");
   if (s && !s.classList.contains("hidden")) {
     closeSettingsModal();
