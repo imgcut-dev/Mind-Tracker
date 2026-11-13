@@ -4,106 +4,269 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#4a154b">
+<meta name="theme-color" content="#2b0b2c">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@600;700&display=swap">
 <title>관리자 · 지금 마음에 필요한 책 한 권</title>
 <style>
-  :root { --brand: #4a154b; --bg: #f7f4f8; --ink: #1d1b20; --sub: #625b71; --line: #cac4d0; --err: #b3261e; --ok: #1b6e3c; }
+  :root {
+    --ink: #1c1520; --sub: #6f6577; --paper: #f6f2ec; --card: #fffdf9; --line: #e3dbd0;
+    --plum: #4a154b; --plum-d: #2b0b2c; --plum-l: #ecdff0; --warn: #b7791f; --warn-bg: #fbf0d9;
+    --err: #b3261e; --ok: #2f6b4f; --ok-bg: #dcefe4;
+    --serif: "Noto Serif KR", "Nanum Myeongjo", serif;
+    --sans: "IBM Plex Sans KR", -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font: 15px/1.5 -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif; }
-  main { max-width: 720px; margin: 0 auto; padding: 48px 16px; }
-  h1 { margin: 0 0 8px; font-size: 22px; }
-  h2 { margin: 0; font-size: 18px; }
-  p { margin: 0 0 16px; color: var(--sub); }
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
-  button { font: inherit; cursor: pointer; border-radius: 999px; padding: 10px 20px; border: 1px solid var(--line); background: #fff; color: var(--ink); }
-  button.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.55 var(--sans); }
+  h1, h2, h3 { margin: 0; font-family: var(--serif); font-weight: 700; letter-spacing: -.01em; }
+  p { margin: 0; }
+  button { font: inherit; cursor: pointer; border-radius: 8px; padding: 8px 16px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+  button:hover { border-color: var(--plum); }
+  button.primary { background: var(--plum); border-color: var(--plum); color: #fff; }
+  button.primary:hover { background: var(--plum-d); }
   button.danger { color: var(--err); }
-  button.small { padding: 6px 14px; font-size: 13px; }
-  button:disabled { opacity: .6; cursor: default; }
-  .msg { margin: 12px 0 0; min-height: 1.5em; color: var(--err); }
+  button.small { padding: 4px 12px; font-size: 13px; }
+  button:disabled { opacity: .55; cursor: default; }
+  input[type=text], input[type=search], input[type=number], textarea, select {
+    width: 100%; font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink);
+  }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--plum-l); border-color: var(--plum); }
+  .msg { min-height: 1.4em; color: var(--err); font-size: 13px; }
   .msg.ok { color: var(--ok); }
-  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
-  header span { color: var(--sub); font-size: 13px; word-break: break-all; }
-  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .menu li { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; color: var(--sub); }
-  .menu li.on { color: var(--ink); cursor: pointer; font-weight: 600; }
-  .menu li.on:hover { border-color: var(--brand); }
-  .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .bar div { display: flex; gap: 8px; flex-wrap: wrap; }
-  .books li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; }
-  .books .t { font-weight: 600; }
-  .books .m { color: var(--sub); font-size: 13px; }
-  .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #e8def8; color: var(--brand); margin-left: 6px; }
-  .badge.draft { background: #eee; color: var(--sub); }
-  .acts { display: flex; gap: 6px; flex-shrink: 0; }
-  dialog { border: 0; border-radius: 16px; padding: 24px; width: min(560px, calc(100vw - 32px)); }
-  dialog::backdrop { background: rgba(0, 0, 0, .4); }
-  label { display: block; margin: 12px 0 4px; font-size: 13px; color: var(--sub); }
-  input[type=text], input[type=number], textarea, select { width: 100%; font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
-  textarea { min-height: 72px; resize: vertical; }
-  .emos { display: flex; flex-wrap: wrap; gap: 8px 14px; }
-  .emos label { display: flex; align-items: center; gap: 4px; margin: 0; color: var(--ink); font-size: 14px; }
-  .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
   [hidden] { display: none !important; }
+
+  /* 로그인·확인 화면 */
+  .gate { min-height: 100vh; display: grid; place-items: center; padding: 16px; background: radial-gradient(1200px 600px at 20% -10%, #5b2a5c 0, var(--plum-d) 55%); }
+  .gate .box { width: min(400px, 100%); background: var(--card); border-radius: 16px; padding: 32px; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+  .gate .tag { font-size: 11px; letter-spacing: .18em; color: var(--plum); font-weight: 600; margin-bottom: 8px; }
+  .gate h1 { font-size: 24px; margin-bottom: 8px; }
+  .gate p.d { color: var(--sub); margin-bottom: 24px; }
+  .gate button.primary { width: 100%; padding: 12px; }
+
+  /* 앱 레이아웃 */
+  .app { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
+  .side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: var(--plum-d); color: #e9dcea; padding: 24px 16px; }
+  .brand { padding: 0 8px 24px; border-bottom: 1px solid rgba(255,255,255,.12); margin-bottom: 16px; }
+  .brand b { display: block; font: 700 17px/1.3 var(--serif); color: #fff; }
+  .brand small { letter-spacing: .2em; font-size: 10px; color: #c9a9cb; }
+  .nav { flex: 1; overflow-y: auto; }
+  .nav h4 { margin: 20px 8px 6px; font-size: 11px; font-weight: 500; letter-spacing: .12em; color: #a98aab; }
+  .nav a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: #e9dcea; text-decoration: none; font-weight: 500; }
+  .nav a:hover { background: rgba(255,255,255,.08); }
+  .nav a.on { background: #fff; color: var(--plum-d); }
+  .nav a svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .nav a em { margin-left: auto; font-style: normal; font-size: 10px; padding: 1px 7px; border-radius: 99px; background: rgba(255,255,255,.14); color: #d8c3da; }
+  .nav a.on em { background: var(--plum-l); color: var(--plum); }
+  .me { display: flex; align-items: center; gap: 10px; padding: 16px 8px 0; border-top: 1px solid rgba(255,255,255,.12); }
+  .me i { width: 32px; height: 32px; border-radius: 50%; background: var(--plum-l); color: var(--plum); display: grid; place-items: center; font: 700 14px var(--serif); font-style: normal; flex: none; }
+  .me span { flex: 1; min-width: 0; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .me button { background: transparent; color: #e9dcea; border-color: rgba(255,255,255,.25); padding: 4px 10px; font-size: 12px; }
+
+  .main { min-width: 0; padding: 32px 40px 64px; }
+  .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  .crumb { font-size: 12px; color: var(--sub); margin-bottom: 4px; }
+  .top h1 { font-size: 28px; }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; }
+  .panel h3 { font-size: 16px; margin-bottom: 4px; }
+  .panel .hint { color: var(--sub); font-size: 13px; margin-bottom: 16px; }
+
+  /* 대시보드 */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; }
+  .stat small { color: var(--sub); font-size: 12px; }
+  .stat b { display: block; margin-top: 6px; font: 700 34px/1.1 var(--serif); color: var(--plum); }
+  .stat b span { font-size: 15px; color: var(--sub); margin-left: 4px; font-weight: 600; }
+  .grid2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
+  .col { display: grid; gap: 16px; align-content: start; }
+  .bar-row { display: grid; grid-template-columns: 64px 1fr 44px; align-items: center; gap: 12px; padding: 5px 0; }
+  .bar-label { font-weight: 500; }
+  .bar-track { height: 10px; background: #f0e9df; border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; background: var(--plum); border-radius: 99px; animation: grow .9s cubic-bezier(.2,.8,.2,1) .15s forwards; }
+  .bar-fill.low { background: var(--warn); }
+  .bar-n { text-align: right; color: var(--sub); font-size: 13px; font-variant-numeric: tabular-nums; }
+  @keyframes grow { to { width: var(--w); } }
+  .note { margin-top: 14px; padding: 10px 14px; border-radius: 10px; background: var(--warn-bg); color: #7a5314; font-size: 13px; }
+  .note.good { background: var(--ok-bg); color: var(--ok); }
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .rows li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .rows li:last-child { border-bottom: 0; }
+  .rows .t { font-weight: 600; }
+  .rows .m { color: var(--sub); font-size: 12px; white-space: nowrap; }
+  .pill { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 99px; background: var(--plum-l); color: var(--plum); }
+  .pill.ok { background: var(--ok-bg); color: var(--ok); }
+  .pill.wait { background: #eee8df; color: var(--sub); }
+  .banner { margin-bottom: 16px; padding: 16px 20px; border-radius: 14px; border: 1px dashed var(--plum); background: var(--plum-l); display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .rise { animation: rise .5s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* 책 테이블 */
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .tools .grow { flex: 1; min-width: 200px; }
+  .tools select { width: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 12px; font-weight: 600; color: var(--sub); padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:hover { background: #faf6ef; }
+  td .t { font-weight: 600; }
+  td .a { color: var(--sub); font-size: 12px; }
+  td.emo { max-width: 220px; }
+  td.emo .pill { margin: 0 4px 4px 0; }
+  td.act { white-space: nowrap; text-align: right; }
+  td.act button + button { margin-left: 6px; }
+  .tfoot { padding-top: 12px; color: var(--sub); font-size: 13px; }
+  .empty { padding: 40px 0; text-align: center; color: var(--sub); }
+
+  .soon { text-align: center; padding: 72px 24px; }
+  .soon h3 { font-size: 20px; margin-bottom: 8px; }
+  .soon p { color: var(--sub); }
+
+  /* 다이얼로그 */
+  dialog { border: 0; border-radius: 16px; padding: 28px; width: min(580px, calc(100vw - 32px)); background: var(--card); color: var(--ink); }
+  dialog::backdrop { background: rgba(28, 21, 32, .5); }
+  dialog h2 { font-size: 20px; margin-bottom: 8px; }
+  label.l { display: block; margin: 14px 0 4px; font-size: 12px; font-weight: 500; color: var(--sub); }
+  textarea { min-height: 72px; resize: vertical; }
+  .f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .emos { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 4px 0; }
+  .emos label { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+  .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+
+  @media (max-width: 1100px) { .stats { grid-template-columns: repeat(2, 1fr); } .grid2 { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; }
+    .side { position: static; height: auto; padding: 16px; }
+    .nav { display: flex; flex-wrap: wrap; gap: 4px; overflow: visible; }
+    .nav h4 { display: none; }
+    .me { border: 0; padding-top: 12px; }
+    .main { padding: 24px 16px 48px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .bar-fill { animation: none; width: var(--w); } .rise { animation: none; } }
 </style>
 </head>
 <body>
-<main>
-  <section id="login" class="card" hidden>
+
+<div id="login" class="gate" hidden>
+  <div class="box">
+    <div class="tag">ADMIN</div>
     <h1>관리자 로그인</h1>
-    <p>등록된 관리자 계정만 들어올 수 있습니다.</p>
+    <p class="d">등록된 관리자 계정만 들어올 수 있습니다.</p>
     <button id="go" class="primary" type="button">Google로 로그인</button>
-    <p id="msg" class="msg" role="alert"></p>
-  </section>
+    <p id="msg" class="msg" role="alert" style="margin-top:12px"></p>
+  </div>
+</div>
 
-  <section id="checking" class="card"><p style="margin:0">권한을 확인하는 중…</p></section>
+<div id="checking" class="gate"><div class="box"><p>권한을 확인하는 중…</p></div></div>
 
-  <section id="dash" hidden>
-    <header>
-      <div><h1 style="margin:0">관리자</h1><span id="who"></span></div>
-      <button id="out" type="button">로그아웃</button>
+<div id="app" class="app" hidden>
+  <aside class="side">
+    <div class="brand"><b>지금 마음에 필요한<br>책 한 권</b><small>ADMIN</small></div>
+    <nav class="nav" aria-label="관리자 메뉴">
+      <h4>개요</h4>
+      <a href="#/dashboard" data-route="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>대시보드</a>
+      <h4>콘텐츠</h4>
+      <a href="#/books" data-route="books"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg>추천 책 DB</a>
+      <a href="#/emotions" data-route="emotions"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/></svg>감정 구슬<em>준비 중</em></a>
+      <h4>연동</h4>
+      <a href="#/gemini" data-route="gemini"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>Gemini API<em>준비 중</em></a>
+      <a href="#/keys" data-route="keys"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg>API 키 관리<em>준비 중</em></a>
+      <a href="#/shops" data-route="shops"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg>쇼핑몰 연동<em>준비 중</em></a>
+    </nav>
+    <div class="me"><i id="avatar">A</i><span id="who"></span><button id="out" type="button">로그아웃</button></div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div><div id="crumb" class="crumb"></div><h1 id="pageTitle"></h1></div>
+      <div id="topActions"><button id="addBtnTop" class="primary" type="button">+ 책 추가</button></div>
     </header>
 
-    <div id="home" class="card">
-      <ul class="menu">
-        <li>Gemini API 연동 관리 <small>준비 중</small></li>
-        <li>API 키 등록·관리 <small>준비 중</small></li>
-        <li>감정 구슬 추가 등록 <small>준비 중</small></li>
-        <li id="openBooks" class="on">추천 책 DB <small>관리하기 →</small></li>
-        <li>쇼핑몰 연동 관리 <small>준비 중</small></li>
-      </ul>
-    </div>
-
-    <div id="books" class="card" hidden>
-      <div class="bar">
-        <button id="backHome" class="small" type="button">← 메뉴</button>
-        <div>
-          <button id="seedBtn" class="small" type="button" hidden>기본 책 30권 가져오기</button>
-          <button id="addBtn" class="small primary" type="button">+ 책 추가</button>
+    <!-- 대시보드 -->
+    <section id="v-dashboard">
+      <p id="dmsg" class="msg" role="status"></p>
+      <div id="emptyBanner" class="banner" hidden>
+        <div><b>아직 DB에 책이 없습니다.</b><br><span style="color:var(--sub)">기본 책 30권을 가져오거나 직접 등록해 보세요.</span></div>
+        <a href="#/books"><button class="primary" type="button">추천 책 DB로 이동</button></a>
+      </div>
+      <div class="stats">
+        <div class="stat rise" style="animation-delay:0s"><small>전체 책</small><b id="s-total">–<span>권</span></b></div>
+        <div class="stat rise" style="animation-delay:.06s"><small>공개 중</small><b id="s-pub">–<span>권</span></b></div>
+        <div class="stat rise" style="animation-delay:.12s"><small>초안(숨김)</small><b id="s-draft">–<span>권</span></b></div>
+        <div class="stat rise" style="animation-delay:.18s"><small>책이 있는 감정</small><b id="s-cover">–<span>/ 10</span></b></div>
+      </div>
+      <div class="grid2">
+        <div class="panel rise" style="animation-delay:.24s">
+          <h3>감정별 공개 책</h3>
+          <p class="hint">한 번에 3권을 추천하므로 감정마다 공개 책이 3권 이상 있어야 합니다.</p>
+          <div id="bars"></div>
+          <div id="lowNote" class="note" hidden></div>
+        </div>
+        <div class="col">
+          <div class="panel rise" style="animation-delay:.3s">
+            <h3>최근 수정한 책</h3>
+            <p class="hint">가장 최근에 등록·수정된 순서입니다.</p>
+            <ul id="recent" class="rows"></ul>
+          </div>
+          <div class="panel rise" style="animation-delay:.36s">
+            <h3>연동 상태</h3>
+            <p class="hint">&nbsp;</p>
+            <ul class="rows">
+              <li><span class="t">관리자 로그인</span><span class="pill ok">정상</span></li>
+              <li><span class="t">Firestore 연결</span><span id="dbState" class="pill wait">확인 중</span></li>
+              <li><span class="t">Gemini API</span><span class="pill wait">준비 중</span></li>
+              <li><span class="t">쇼핑몰 연동</span><span class="pill wait">준비 중</span></li>
+            </ul>
+          </div>
         </div>
       </div>
-      <h2 id="booksTitle">추천 책 DB</h2>
-      <p id="bmsg" class="msg" role="status"></p>
-      <ul id="bookList" class="books"></ul>
-    </div>
-  </section>
-</main>
+    </section>
+
+    <!-- 추천 책 DB -->
+    <section id="v-books" hidden>
+      <div class="panel">
+        <div class="tools">
+          <input id="q" class="grow" type="search" placeholder="제목·저자 검색">
+          <select id="fs" aria-label="상태 필터"><option value="">상태 전체</option><option value="published">공개</option><option value="draft">초안</option></select>
+          <select id="fe" aria-label="감정 필터"><option value="">감정 전체</option></select>
+          <button id="seedBtn" type="button" hidden>기본 책 30권 가져오기</button>
+        </div>
+        <p id="bmsg" class="msg" role="status"></p>
+        <table>
+          <thead><tr><th>제목 / 저자</th><th>분야</th><th>어울리는 감정</th><th>상태</th><th>수정일</th><th></th></tr></thead>
+          <tbody id="bookRows"></tbody>
+        </table>
+        <div id="bookEmpty" class="empty" hidden>조건에 맞는 책이 없습니다.</div>
+        <div id="tfoot" class="tfoot"></div>
+      </div>
+    </section>
+
+    <!-- 준비 중 화면 -->
+    <section id="v-soon" hidden>
+      <div class="panel soon"><h3><span id="soonName"></span> — 준비 중</h3><p>다음 단계에서 제공할 예정입니다.</p></div>
+    </section>
+  </div>
+</div>
 
 <dialog id="dlg">
   <form id="form" method="dialog">
     <h2 id="dlgTitle">책 추가</h2>
-    <label for="f-title">제목 *</label><input id="f-title" type="text" maxlength="100" required>
-    <label for="f-author">저자 *</label><input id="f-author" type="text" maxlength="100" required>
-    <label for="f-genre">분야</label><input id="f-genre" type="text" maxlength="50" placeholder="예: 소설, 에세이, 심리">
-    <label for="f-year">처음 출간된 연도</label><input id="f-year" type="number" min="1000" max="2100">
-    <label for="f-intro">책 소개 (2문장 이내)</label><textarea id="f-intro" maxlength="500"></textarea>
-    <label for="f-for">이런 분께</label><input id="f-for" type="text" maxlength="200">
-    <label for="f-keywords">키워드 (쉼표로 구분, 3개 이하)</label><input id="f-keywords" type="text" maxlength="100">
-    <label for="f-reasons">추천 이유 (한 줄에 하나씩)</label><textarea id="f-reasons" maxlength="1000"></textarea>
-    <label>어울리는 감정</label><div id="emos" class="emos"></div>
-    <label for="f-status">상태</label>
-    <select id="f-status"><option value="published">공개</option><option value="draft">초안(숨김)</option></select>
+    <label class="l" for="f-title">제목 *</label><input id="f-title" type="text" maxlength="100" required>
+    <div class="f2">
+      <div><label class="l" for="f-author">저자 *</label><input id="f-author" type="text" maxlength="100" required></div>
+      <div><label class="l" for="f-genre">분야</label><input id="f-genre" type="text" maxlength="50" placeholder="예: 소설, 에세이, 심리"></div>
+    </div>
+    <div class="f2">
+      <div><label class="l" for="f-year">처음 출간된 연도</label><input id="f-year" type="number" min="1000" max="2100"></div>
+      <div><label class="l" for="f-status">상태</label>
+        <select id="f-status"><option value="published">공개</option><option value="draft">초안(숨김)</option></select></div>
+    </div>
+    <label class="l" for="f-intro">책 소개 (2문장 이내)</label><textarea id="f-intro" maxlength="500"></textarea>
+    <label class="l" for="f-for">이런 분께</label><input id="f-for" type="text" maxlength="200">
+    <label class="l" for="f-keywords">키워드 (쉼표로 구분, 3개 이하)</label><input id="f-keywords" type="text" maxlength="100">
+    <label class="l" for="f-reasons">추천 이유 (한 줄에 하나씩)</label><textarea id="f-reasons" maxlength="1000"></textarea>
+    <label class="l">어울리는 감정 *</label><div id="emos" class="emos"></div>
     <p id="fmsg" class="msg" role="alert"></p>
     <div class="foot">
       <button id="cancel" type="button">취소</button>
@@ -128,15 +291,19 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const setMsg = (node, text, ok) => { node.textContent = text; node.classList.toggle("ok", !!ok); };
 
 // ponytail: 감정 목록은 고정 10개. 감정 구슬 관리 화면이 생기면 거기서 읽어 온다.
 const EMOTIONS = ["외로움", "불안", "우울", "분노", "번아웃", "설렘", "슬픔", "후회", "무기력", "기쁨"];
+const MIN_BOOKS = 3; // 한 번에 추천하는 권수(기본값)
 
 /* ---------- 로그인 ---------- */
 function show(name) {
-  for (const id of ["login", "checking", "dash"]) $(id).hidden = id !== name;
+  $("login").hidden = name !== "login";
+  $("checking").hidden = name !== "checking";
+  $("app").hidden = name !== "app";
 }
-function setMsg(el, text, ok) { el.textContent = text; el.classList.toggle("ok", !!ok); }
 
 // 허용 목록 = Firestore admins/{이메일(소문자)} 문서가 있는가
 // ponytail: 화면 판정은 안내용이다. 실제 차단은 보안 규칙이 하므로 관리자 데이터는 반드시 규칙으로 막는다.
@@ -161,7 +328,9 @@ onAuthStateChanged(auth, async (user) => {
   const result = await checkAdmin(user);
   if (result === "yes") {
     $("who").textContent = user.email;
-    return show("dash");
+    $("avatar").textContent = user.email[0].toUpperCase();
+    show("app");
+    return route();
   }
   const email = user.email;
   await signOut(auth);
@@ -183,58 +352,129 @@ $("go").addEventListener("click", async () => {
 });
 $("out").addEventListener("click", () => signOut(auth));
 
-/* ---------- 추천 책 DB ---------- */
+/* ---------- 라우팅 (#/dashboard, #/books ...) ---------- */
+const TITLES = { dashboard: "대시보드", books: "추천 책 DB", emotions: "감정 구슬", gemini: "Gemini API 연동", keys: "API 키 관리", shops: "쇼핑몰 연동" };
+const LIVE = ["dashboard", "books"];
+
+function route() {
+  const key = location.hash.replace(/^#\/?/, "") || "dashboard";
+  const r = TITLES[key] ? key : "dashboard";
+  for (const a of document.querySelectorAll(".nav a")) a.classList.toggle("on", a.dataset.route === r);
+  $("v-dashboard").hidden = r !== "dashboard";
+  $("v-books").hidden = r !== "books";
+  $("v-soon").hidden = LIVE.includes(r);
+  $("topActions").hidden = !LIVE.includes(r);
+  $("pageTitle").textContent = TITLES[r];
+  $("crumb").textContent = "관리자 / " + TITLES[r];
+  $("soonName").textContent = TITLES[r];
+  document.title = TITLES[r] + " · 관리자";
+  if (LIVE.includes(r)) loadBooks();
+}
+window.addEventListener("hashchange", () => { if (auth.currentUser) route(); });
+
+/* ---------- 책 데이터 ---------- */
 const booksCol = collection(db, "books");
 let books = []; // [{id, ...data}]
-
-$("openBooks").addEventListener("click", () => { $("home").hidden = true; $("books").hidden = false; loadBooks(); });
-$("backHome").addEventListener("click", () => { $("books").hidden = true; $("home").hidden = false; });
+const ms = (b) => b.updatedAt?.toMillis?.() ?? 0;
+const fmtDate = (b) => (ms(b) ? new Date(ms(b)).toLocaleDateString("ko-KR") : "–");
 
 async function loadBooks() {
-  setMsg($("bmsg"), "불러오는 중…");
+  const msgs = [$("dmsg"), $("bmsg")];
+  msgs.forEach((m) => setMsg(m, "불러오는 중…"));
   try {
     const snap = await getDocs(booksCol);
     books = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     books.sort((a, b) => a.title.localeCompare(b.title, "ko"));
+    msgs.forEach((m) => setMsg(m, ""));
+    $("dbState").textContent = "정상"; $("dbState").className = "pill ok";
+    renderDashboard();
     renderBooks();
-    setMsg($("bmsg"), "");
   } catch (e) {
     console.error(e);
-    setMsg($("bmsg"), "책 목록을 불러오지 못했습니다. (" + (e.code || e.message) + ")");
+    msgs.forEach((m) => setMsg(m, "책 목록을 불러오지 못했습니다. (" + (e.code || e.message) + ")"));
+    $("dbState").textContent = "오류"; $("dbState").className = "pill";
   }
 }
 
-function renderBooks() {
-  $("booksTitle").textContent = "추천 책 DB (" + books.length + "권)";
-  $("seedBtn").hidden = books.length > 0;
-  const ul = $("bookList");
-  ul.replaceChildren();
-  for (const b of books) {
-    const li = document.createElement("li");
-    const info = document.createElement("div");
-    const t = document.createElement("div");
-    t.className = "t";
-    t.textContent = b.title;
-    const badge = document.createElement("span");
-    badge.className = "badge" + (b.status === "draft" ? " draft" : "");
-    badge.textContent = b.status === "draft" ? "초안" : "공개";
-    t.append(badge);
-    const m = document.createElement("div");
-    m.className = "m";
-    m.textContent = b.author + " · " + (b.emotions || []).join(", ");
-    info.append(t, m);
-    const acts = document.createElement("div");
-    acts.className = "acts";
-    const edit = document.createElement("button");
-    edit.type = "button"; edit.className = "small"; edit.textContent = "수정";
-    edit.addEventListener("click", () => openForm(b));
-    const del = document.createElement("button");
-    del.type = "button"; del.className = "small danger"; del.textContent = "삭제";
-    del.addEventListener("click", () => removeBook(b));
-    acts.append(edit, del);
-    li.append(info, acts);
-    ul.append(li);
+/* ---------- 대시보드 ---------- */
+function renderDashboard() {
+  const published = books.filter((b) => b.status === "published");
+  const count = (name) => published.filter((b) => (b.emotions || []).includes(name)).length;
+  const counts = EMOTIONS.map((name) => [name, count(name)]);
+  const max = Math.max(1, ...counts.map(([, n]) => n));
+
+  const setStat = (id, n, unit) => { const b = $(id); b.textContent = n; b.append(el("span", null, unit)); };
+  setStat("s-total", books.length, "권");
+  setStat("s-pub", published.length, "권");
+  setStat("s-draft", books.length - published.length, "권");
+  setStat("s-cover", counts.filter(([, n]) => n > 0).length, "/ 10");
+  $("emptyBanner").hidden = books.length > 0;
+
+  const bars = $("bars");
+  bars.replaceChildren();
+  for (const [name, n] of counts) {
+    const row = el("div", "bar-row");
+    const track = el("div", "bar-track");
+    const fill = el("div", "bar-fill" + (n < MIN_BOOKS ? " low" : ""));
+    fill.style.setProperty("--w", (n / max) * 100 + "%");
+    track.append(fill);
+    row.append(el("span", "bar-label", name), track, el("span", "bar-n", n + "권"));
+    bars.append(row);
   }
+  const low = counts.filter(([, n]) => n < MIN_BOOKS).map(([name]) => name);
+  const note = $("lowNote");
+  note.hidden = books.length === 0;
+  note.classList.toggle("good", low.length === 0);
+  note.textContent = low.length === 0
+    ? "모든 감정에 공개 책이 " + MIN_BOOKS + "권 이상 있습니다."
+    : low.join(", ") + " 감정은 공개 책이 " + MIN_BOOKS + "권 미만입니다. 주황색 막대를 채워 주세요.";
+
+  const recent = $("recent");
+  recent.replaceChildren();
+  const list = [...books].sort((a, b) => ms(b) - ms(a)).slice(0, 6);
+  if (!list.length) recent.append(el("li", null, "아직 책이 없습니다."));
+  for (const b of list) {
+    const li = el("li");
+    const left = el("div");
+    left.append(el("div", "t", b.title), el("div", "m", b.author));
+    li.append(left, el("span", "m", fmtDate(b)));
+    recent.append(li);
+  }
+}
+
+/* ---------- 책 테이블 ---------- */
+for (const name of EMOTIONS) $("fe").append(new Option(name, name));
+for (const id of ["q", "fs", "fe"]) $(id).addEventListener("input", renderBooks);
+
+function renderBooks() {
+  const q = $("q").value.trim().toLowerCase();
+  const fs = $("fs").value;
+  const fe = $("fe").value;
+  const rows = books.filter((b) =>
+    (!q || (b.title + " " + b.author).toLowerCase().includes(q)) &&
+    (!fs || b.status === fs) &&
+    (!fe || (b.emotions || []).includes(fe)));
+  $("seedBtn").hidden = books.length > 0;
+  const tbody = $("bookRows");
+  tbody.replaceChildren();
+  for (const b of rows) {
+    const tr = el("tr");
+    const t = el("td"); t.append(el("div", "t", b.title), el("div", "a", b.author));
+    const emo = el("td", "emo");
+    for (const e of b.emotions || []) emo.append(el("span", "pill", e));
+    const st = el("td"); st.append(el("span", "pill " + (b.status === "draft" ? "wait" : "ok"), b.status === "draft" ? "초안" : "공개"));
+    const act = el("td", "act");
+    const edit = el("button", "small", "수정"); edit.type = "button";
+    edit.addEventListener("click", () => openForm(b));
+    const del = el("button", "small danger", "삭제"); del.type = "button";
+    del.addEventListener("click", () => removeBook(b));
+    act.append(edit, del);
+    tr.append(t, el("td", null, b.genre || "–"), emo, st, el("td", null, fmtDate(b)), act);
+    tbody.append(tr);
+  }
+  $("bookEmpty").hidden = rows.length > 0;
+  $("bookEmpty").textContent = books.length ? "조건에 맞는 책이 없습니다." : "아직 책이 없습니다. 기본 책을 가져오거나 직접 추가하세요.";
+  $("tfoot").textContent = books.length + "권 중 " + rows.length + "권 표시";
 }
 
 async function removeBook(b) {
@@ -294,19 +534,18 @@ function openForm(b) {
   setMsg($("fmsg"), "");
   $("dlg").showModal();
 }
-$("addBtn").addEventListener("click", () => openForm(null));
+$("addBtnTop").addEventListener("click", () => openForm(null));
 $("cancel").addEventListener("click", () => $("dlg").close());
 
 $("form").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const emotions = [...$("emos").querySelectorAll("input:checked")].map((c) => c.value);
   if (!emotions.length) return setMsg($("fmsg"), "어울리는 감정을 하나 이상 선택하세요.");
-  const year = $("f-year").value ? Number($("f-year").value) : null;
   const data = {
     title: $("f-title").value.trim(),
     author: $("f-author").value.trim(),
     genre: $("f-genre").value.trim(),
-    year,
+    year: $("f-year").value ? Number($("f-year").value) : null,
     intro: $("f-intro").value.trim(),
     forWhom: $("f-for").value.trim(),
     keywords: $("f-keywords").value.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 3),
