@@ -81,7 +81,12 @@ function msg(text) { $("msg").textContent = text; }
 async function checkAdmin(user) {
   if (!user.email || !user.emailVerified) return "no";
   try {
-    return (await getDoc(doc(db, "admins", user.email.toLowerCase()))).exists() ? "yes" : "no";
+    // Firestore가 없거나 연결이 안 되면 getDoc은 오류 없이 재시도만 하므로 시간 제한을 둔다.
+    const snap = await Promise.race([
+      getDoc(doc(db, "admins", user.email.toLowerCase())),
+      new Promise((_, reject) => setTimeout(() => reject({ code: "timeout: Firestore 데이터베이스가 만들어졌는지 확인하세요" }), 8000))
+    ]);
+    return snap.exists() ? "yes" : "no";
   } catch (e) {
     console.error(e);
     return "error:" + (e.code || e.message);
