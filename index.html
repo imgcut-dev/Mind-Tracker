@@ -3,7 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>마음 추첨기: 감정 공에서 뽑는 책</title>
+<title>지금 마음에 필요한 책 한 권 | 감정으로 고르는 책 추천</title>
+<meta name="description" content="지금 느끼는 감정의 공을 뽑으면, 그 마음에 필요한 책 한 권을 추천해 드려요. 외로움, 불안, 번아웃에 건네는 책.">
+<link rel="canonical" href="https://mind-tracker-test.vercel.app/">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#4a154b">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-title" content="마음 한 권">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="지금 마음에 필요한 책 한 권">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="지금 마음에 필요한 책 한 권">
+<meta property="og:description" content="감정의 공을 뽑으면, 지금 내 마음에 필요한 책 한 권을 건네 드려요.">
+<meta property="og:url" content="https://mind-tracker-test.vercel.app/">
+<meta property="og:image" content="https://mind-tracker-test.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="지금 마음에 필요한 책 한 권 — 감정으로 고르는 책 추천">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"지금 마음에 필요한 책 한 권","alternateName":"마음 한 권","description":"감정에 어울리는 책을 추천하는 서비스","inLanguage":"ko","applicationCategory":"LifestyleApplication","url":"https://mind-tracker-test.vercel.app/"}
+</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 :root {
@@ -376,9 +396,10 @@ footer { margin-top: 32px; color: var(--on-surface-variant); font-size: 12px; li
 </style>
 </head>
 <body>
+<noscript><p>지금 마음에 필요한 책 한 권은 감정(외로움·불안·번아웃 등)에 어울리는 책을 추천하는 서비스입니다. 사용하려면 JavaScript를 켜 주세요.</p></noscript>
 <main>
   <div class="top">
-    <h1>마음 추첨기</h1>
+    <h1>지금 마음에 필요한 책 한 권</h1>
     <button id="gear" class="icon-btn" type="button" aria-label="설정" title="설정" aria-expanded="false" aria-controls="settingsModal">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
@@ -501,7 +522,7 @@ footer { margin-top: 32px; color: var(--on-surface-variant); font-size: 12px; li
     </div>
 
     <p style="font-size:14px; color:var(--on-surface-variant); margin:0 0 16px; line-height:1.5;">
-      마음 추첨기의 내부 프롬프트, 도서 추천 권수, 감정 공을 관리하기 위해 Google 계정으로 로그인합니다.
+      지금 마음에 필요한 책 한 권의 내부 프롬프트, 도서 추천 권수, 감정 공을 관리하기 위해 Google 계정으로 로그인합니다.
     </p>
 
     <!-- Google 로그인 버튼(Google이 그려 줌) -->
@@ -2166,7 +2187,7 @@ $("admSaveAllBtn").addEventListener("click", function () {
       return;
     }
     msg.className = "kmsg";
-    msg.textContent = "관리자 설정이 저장되고 마음 추첨기에 반영되었습니다.";
+    msg.textContent = "관리자 설정이 저장되고 지금 마음에 필요한 책 한 권 서비스에 반영되었습니다.";
     setTimeout(function () { msg.textContent = ""; }, 4000);
   }).catch(function () {
     msg.className = "kmsg err";
