@@ -841,15 +841,27 @@ try {
 
 var AI_N = adminConfig.bookCount || 3;
 
+var DB_BOOKS = {};   // Firestore 공개 책: { 감정이름: [[제목, 저자, 이유], ...] }
+var BALL_SPEED = 1;  // 구슬 속도 배율(관리자 화면에서 설정)
+
 function getActiveEmotions() {
   var emoMap = {};
   RAW_EMO.forEach(function (e) { emoMap[e[0]] = e; });
   var active = [];
   adminConfig.emotions.forEach(function (ae) {
     if (ae.enabled !== false) {
-      if (emoMap[ae.name]) {
+      var extra = DB_BOOKS[ae.name] || [];
+      if (emoMap[ae.name] && !extra.length) {
         var base = emoMap[ae.name];
         active.push([base[0], ae.color || base[1], base[2], true, false]);
+      } else if (extra.length) {
+        // 기본 책 목록 뒤에 DB 책을 붙이고, 제목이 같은 책은 한 번만 쓴다.
+        var b0 = emoMap[ae.name], seen = {}, list = [];
+        ((b0 ? b0[2] : [])).concat(extra).forEach(function (b) {
+          var k = String(b[0]).replace(/\s/g, "");
+          if (!seen[k]) { seen[k] = true; list.push(b); }
+        });
+        active.push([ae.name, ae.color || (b0 ? b0[1] : "#8D99AE"), list, true, !b0]);
       } else {
         active.push([ae.name, ae.color || "#8D99AE", [
           [ae.name + "의 마음", "작자 미상", ae.name + "의 마음에 조용히 머무르는 책입니다."]
@@ -991,7 +1003,7 @@ function init() {
 }
 
 function step() {
-  var ts = hovering ? 0.35 : 1;
+  var ts = (hovering ? 0.35 : 1) * BALL_SPEED;
   balls.forEach(function (b) {
     var dx = b.x - CX;
     b.vy += 0.03;
@@ -2211,6 +2223,52 @@ fetch("/api/admin/config").then(function (r) { return r.json(); }).then(function
     init();
   }
 }).catch(function () {});
+
+// Firestore 공개 데이터(감정·책·구슬 속도)를 읽어 화면에 반영한다.
+// 비어 있거나 읽지 못하면 기존 동작을 그대로 쓴다. 감정 순서·색은 관리자 화면이 정한다.
+(function () {
+  var base = "https://firestore.googleapis.com/v1/projects/mind-tracker-main/databases/(default)/documents";
+  function dec(v) {
+    if (!v) return null;
+    if ("stringValue" in v) return v.stringValue;
+    if ("integerValue" in v) return Number(v.integerValue);
+    if ("doubleValue" in v) return v.doubleValue;
+    if ("booleanValue" in v) return v.booleanValue;
+    if ("arrayValue" in v) return (v.arrayValue.values || []).map(dec);
+    return null;
+  }
+  function fields(f) { var o = {}; Object.keys(f || {}).forEach(function (k) { o[k] = dec(f[k]); }); return o; }
+  function query(coll, field, val) {
+    return fetch(base + ":runQuery", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ structuredQuery: { from: [{ collectionId: coll }], where: { fieldFilter: {
+        field: { fieldPath: field }, op: "EQUAL", value: typeof val === "boolean" ? { booleanValue: val } : { stringValue: val } } } } })
+    }).then(function (r) { return r.json(); }).then(function (rows) {
+      return rows.filter(function (r) { return r.document; }).map(function (r) { return fields(r.document.fields); });
+    });
+  }
+  Promise.all([
+    query("emotions", "enabled", true),
+    query("books", "status", "published"),
+    fetch(base + "/config/public").then(function (r) { return r.ok ? r.json() : null; })
+  ]).then(function (res) {
+    var emos = res[0].sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+    var changed = false;
+    if (emos.length) {
+      adminConfig.emotions = emos.map(function (e) { return { name: e.name, color: e.color, enabled: true }; });
+      changed = true;
+    }
+    res[1].forEach(function (b) {
+      (b.emotions || []).forEach(function (n) {
+        (DB_BOOKS[n] = DB_BOOKS[n] || []).push([b.title, b.author, (b.reasons && b.reasons[0]) || b.intro || ""]);
+        changed = true;
+      });
+    });
+    var sp = res[2] && res[2].fields ? dec(res[2].fields.ballSpeed) : null;
+    if (typeof sp === "number" && sp >= 0.3 && sp <= 2) BALL_SPEED = sp;
+    if (changed) { clearSelection(); init(); }
+  }).catch(function () {});
+})();
 </script>
 </body>
 </html>
