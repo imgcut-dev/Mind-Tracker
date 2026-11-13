@@ -1,0 +1,6 @@
+{
+  "name": "마음 추첨기 & AI 서비스 추천",
+  "description": "감정 공 추첨과 고민 분석을 통해 Gemini AI가 맞춤 도서 및 상황별 AI 서비스를 스마트하게 추천해주는 큐레이션 서비스",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

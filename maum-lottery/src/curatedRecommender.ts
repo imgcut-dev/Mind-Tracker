@@ -1,0 +1,500 @@
+interface BookRecommendation {
+  title: string;
+  author: string;
+  reason: string;
+  emotions: string[];
+  genre: string;
+  intro: string;
+  forWhom: string;
+  keywords: string[];
+  year: number | null;
+}
+
+const BOOK_CATALOG: Record<string, Array<{
+  title: string;
+  author: string;
+  genre: string;
+  intro: string;
+  forWhom: string;
+  keywords: string[];
+  year: number | null;
+  reasons: string[];
+}>> = {
+  외로움: [
+    {
+      title: '혼자 있는 시간의 힘',
+      author: '사이토 다카시',
+      genre: '인문/자기계발',
+      intro: '고독을 결핍이 아닌 스스로를 단단하게 만드는 침잠의 시간으로 바라보는 책입니다. 혼자만의 시간을 지혜롭게 통과하는 태도를 건넵니다.',
+      forWhom: '문득 세상에 홀로 남겨진 듯 쓸쓸함을 느끼는 분께',
+      keywords: ['고독', '성찰', '자립'],
+      year: 2015,
+      reasons: [
+        '외로움이란 감정을 결핍이 아니라 나를 만나는 단단한 시간으로 바꾸어 줍니다.',
+        '혼자라는 고립감 속에서 흔들리지 않고 중심을 잡는 용기를 줍니다.'
+      ]
+    },
+    {
+      title: '바다가 들리는 편의점',
+      author: '마치다 소노코',
+      genre: '소설',
+      intro: '바닷가 작은 편의점을 찾는 외로운 사람들의 따스한 연대와 위로를 그린 소설입니다. 무심한 듯 다정한 온기가 차가운 마음을 녹입니다.',
+      forWhom: '사람들의 온기와 다정한 위로가 그리운 분께',
+      keywords: ['위로', '인연', '따스함'],
+      year: 2022,
+      reasons: [
+        '차가워진 마음에 따스한 온기와 다정한 시선을 건네주는 소설입니다.',
+        '누군가 곁에 있어 주는 듯한 소박하고 뭉클한 위로를 전합니다.'
+      ]
+    },
+    {
+      title: '모순',
+      author: '양귀자',
+      genre: '한국소설',
+      intro: '인생의 모순과 고독, 그리고 사랑을 솔직하고 명료한 시선으로 탐색하는 스테디셀러입니다. 삶의 복잡성을 그대로 긍정하게 돕습니다.',
+      forWhom: '사람과의 관계 속에서 외로움을 느끼고 고민하는 분께',
+      keywords: ['인생', '선택', '성장'],
+      year: 1998,
+      reasons: [
+        '삶의 불가피한 모순과 쓸쓸함을 섬세하고 담담하게 위로해 줍니다.'
+      ]
+    }
+  ],
+  불안: [
+    {
+      title: '불안',
+      author: '알랭 드 보통',
+      genre: '인문/철학',
+      intro: '현대인이 느끼는 사회적 지위와 불안의 근원을 유쾌하고 명쾌하게 파헤친 인문 교양서입니다. 불안의 원인을 객관적으로 들여다보게 합니다.',
+      forWhom: '미래와 타인의 시선 때문에 마음이 조급하고 초조한 분께',
+      keywords: ['지위', '사회', '성찰'],
+      year: 2004,
+      reasons: [
+        '막연하게 밀려오는 불안의 실체를 차분하게 분석하여 마음을 가라앉혀 줍니다.',
+        '불안은 나만의 결함이 아닌 모두의 본능임을 일깨워 안도감을 줍니다.'
+      ]
+    },
+    {
+      title: '당신이 옳다',
+      author: '정혜신',
+      genre: '심리/치유',
+      intro: '어떤 감정이든 먼저 있는 그대로 인정받아야 치유가 시작된다는 적정심리학의 실천서입니다. 흔들리는 마음을 든든히 지지합니다.',
+      forWhom: '내 감정이 옳은지 불안하고 자꾸 자책하게 되는 분께',
+      keywords: ['공감', '치유', '존중'],
+      year: 2018,
+      reasons: [
+        '초조하고 흔들리는 마음에 "지금 당신의 감정은 당연하다"고 안아줍니다.'
+      ]
+    },
+    {
+      title: '만일 내가 인생을 다시 산다면',
+      author: '김혜남',
+      genre: '에세이',
+      intro: '파킨슨병을 앓으며 삶의 가장 소중한 것을 되찾은 정신분석의의 따뜻한 조언입니다. 완벽하지 않아도 괜찮다는 위로를 건넵니다.',
+      forWhom: '앞날에 대한 걱정으로 오늘을 놓치고 있는 분께',
+      keywords: ['용기', '현재', '포용'],
+      year: 2022,
+      reasons: [
+        '미래에 대한 두려움을 내려놓고 지금 이 순간을 사랑할 용기를 불어넣어 줍니다.'
+      ]
+    }
+  ],
+  우울: [
+    {
+      title: '죽고 싶지만 떡볶이는 먹고 싶어',
+      author: '백세희',
+      genre: '에세이',
+      intro: '경도 우울증을 겪는 저자와 정신과 전문의의 솔직하고 담백한 상담 기록입니다. 그늘진 마음을 숨기지 않고 마주하는 용기를 줍니다.',
+      forWhom: '겉은 멀쩡하지만 속으로는 우울감에 시달리는 분께',
+      keywords: ['공감', '솔직함', '치유'],
+      year: 2018,
+      reasons: [
+        '어두운 마음의 그늘을 부끄러워하지 않고 있는 그대로 인정하게 돕습니다.',
+        '우울한 날에도 소소한 행복을 찾아도 된다는 다정한 해방감을 줍니다.'
+      ]
+    },
+    {
+      title: '어린이라는 세계',
+      author: '김소영',
+      genre: '에세이',
+      intro: '어린이들을 곁에서 지켜보며 길어 올린 순수하고 맑은 시선들이 담긴 에세이입니다. 메마른 마음에 맑은 샘물 같은 회복을 선사합니다.',
+      forWhom: '지치고 가라앉은 마음에 맑은 숨결이 필요한 분께',
+      keywords: ['순수', '다정함', '회복'],
+      year: 2020,
+      reasons: [
+        '무겁게 가라앉은 마음에 따뜻하고 맑은 온기를 채워줍니다.'
+      ]
+    },
+    {
+      title: '보통의 언어들',
+      author: '김이나',
+      genre: '에세이',
+      intro: '우리가 일상에서 무심코 쓰는 단어들의 결을 다정하게 어루만지는 작사가의 책입니다. 꼬여 있던 생각의 매듭을 부드럽게 풀어줍니다.',
+      forWhom: '말 못 할 우울과 복잡한 생각으로 지친 분께',
+      keywords: ['언어', '마음결', '위안'],
+      year: 2020,
+      reasons: [
+        '일상의 단어들을 통해 엉켜 있던 마음에 편안한 쉼표를 찍어 줍니다.'
+      ]
+    }
+  ],
+  분노: [
+    {
+      title: '화해',
+      author: '틱낫한',
+      genre: '인문/명상',
+      intro: '내면의 상처 입은 아이를 돌보고 화와 분노를 자애로운 마음으로 껴안는 명상서입니다. 격한 감정을 다스리는 통찰을 줍니다.',
+      forWhom: '속에서 치밀어 오르는 억울함이나 화를 가라앉히고 싶은 분께',
+      keywords: ['용서', '다스림', '평화'],
+      year: 2011,
+      reasons: [
+        '격앙된 분노의 불길 속에서 내면의 아픔을 다독이며 평온을 찾게 돕습니다.'
+      ]
+    },
+    {
+      title: '미움받을 용기',
+      author: '기시미 이치로, 고가 후미타케',
+      genre: '인문/심리',
+      intro: '아들러 심리학을 통해 타인의 시선과 통제할 수 없는 관계에서 벗어나는 지혜를 담았습니다. 불필요한 감정 소모를 멈추게 합니다.',
+      forWhom: '주변 사람이나 부당한 상황에 분노가 끓어오르는 분께',
+      keywords: ['과제분리', '자유', '용기'],
+      year: 2014,
+      reasons: [
+        '타인의 문제와 나의 과제를 분리하여 분노를 건강하게 덜어내도록 이끕니다.'
+      ]
+    },
+    {
+      title: '친절한 복희씨',
+      author: '박완서',
+      genre: '소설',
+      intro: '삶의 비정함과 인간의 모순을 날카롭고 유머러스하게 그려낸 소설집입니다. 화를 유쾌하고 깊이 있는 성찰로 승화시킵니다.',
+      forWhom: '세상의 불공평함에 속이 답답한 분께',
+      keywords: ['통찰', '해학', '인간미'],
+      year: 2007,
+      reasons: [
+        '억눌린 울분을 시원하게 환기하며 삶을 한 걸음 물러나 바라보게 합니다.'
+      ]
+    }
+  ],
+  번아웃: [
+    {
+      title: '하마터면 열심히 살 뻔했다',
+      author: '하완',
+      genre: '에세이',
+      intro: '끝없는 성실함과 의무감에 지쳐 멈춰 선 저자의 유쾌하고 솔직한 인생 실험입니다. 나를 갉아먹는 과잉 노력을 내려놓게 합니다.',
+      forWhom: '달려도 끝이 없는 일과 책임감에 탈진해 버린 분께',
+      keywords: ['휴식', '내려놓음', '자유'],
+      year: 2018,
+      reasons: [
+        '모든 에너지가 바닥난 순간, 마음껏 힘을 빼도 괜찮다는 해방감을 선물합니다.'
+      ]
+    },
+    {
+      title: '피로사회',
+      author: '한병철',
+      genre: '철학/인문',
+      intro: '‘할 수 있다’는 자기 착취의 긍정성이 어떻게 인간을 파진하게 만드는지 규명한 역작입니다. 멈춤의 가치를 역설합니다.',
+      forWhom: '쉬면서도 죄책감을 느끼는 현대인에게',
+      keywords: ['자기착취', '탈진', '쉼'],
+      year: 2012,
+      reasons: [
+        '내가 나약해서가 아니라 지친 사회 구조 속에서 쉼이 권리임을 깨닫게 해줍니다.'
+      ]
+    },
+    {
+      title: '나는 나로 살기로 했다',
+      author: '김수현',
+      genre: '에세이',
+      intro: '남들의 기준에 맞추느라 소진된 마음을 토닥이며 나 자신에게 너그러워지는 법을 안내합니다. 단단한 자존감을 회복시킵니다.',
+      forWhom: '남들을 챙기느라 정작 자신은 번아웃된 분께',
+      keywords: ['자존감', '경계선', '회복'],
+      year: 2016,
+      reasons: [
+        '방전된 내면을 정돈하고 나 자신을 위한 온전한 휴식을 허락하게 돕습니다.'
+      ]
+    }
+  ],
+  설렘: [
+    {
+      title: '지구 끝의 온실',
+      author: '김초엽',
+      genre: 'SF소설',
+      intro: '재앙 속에서도 서로를 돌보고 푸른 생명을 이어간 사람들의 뭉클하고 환상적인 이야기입니다. 새로운 희망과 기대를 품게 합니다.',
+      forWhom: '새로운 시작을 앞두고 두근거리는 기대를 품은 분께',
+      keywords: ['희망', '연대', '환상'],
+      year: 2021,
+      reasons: [
+        '미지에 대한 기분 좋은 설렘과 다정한 기대감을 피워 올리는 소설입니다.'
+      ]
+    },
+    {
+      title: '어린 왕자',
+      author: '앙투안 드 생텍쥐페리',
+      genre: '고전소설',
+      intro: '사막에서 만난 소년과 장미, 여우의 인연을 통해 눈에 보이지 않는 진정한 설렘과 관계의 신비를 전합니다.',
+      forWhom: '순수한 첫 만남의 두근거림을 되찾고 싶은 분께',
+      keywords: ['관계', '순수', '길들임'],
+      year: 1943,
+      reasons: [
+        '마음이 두근거리는 순수한 순간의 의미를 다시금 일깨워 줍니다.'
+      ]
+    },
+    {
+      title: '밝은 밤',
+      author: '최은영',
+      genre: '소설',
+      intro: '증조모에서 시작해 어머니, 나로 이어지는 여성들의 서사와 가슴 벅찬 인연의 회복을 그린 소설입니다. 삶의 애정을 되살립니다.',
+      forWhom: '소중한 인연과 새로운 나날에 설레는 분께',
+      keywords: ['인연', '기억', '따스함'],
+      year: 2021,
+      reasons: [
+        '어둠 속에서도 환하게 번지는 다정한 인연의 설렘을 고스란히 전합니다.'
+      ]
+    }
+  ],
+  슬픔: [
+    {
+      title: '소년이 온다',
+      author: '한강',
+      genre: '한국소설',
+      intro: '상처와 상실의 아픔을 숭고한 문장으로 껴안으며 남겨진 이들의 슬픔을 애도하는 노벨문학상 수상 작가의 대표작입니다.',
+      forWhom: '깊은 상실감과 슬픔에 말을 잃은 분께',
+      keywords: ['애도', '기억', '인간존엄'],
+      year: 2014,
+      reasons: [
+        '감출 수 없는 깊은 슬픔을 침묵 대신 아름답고 정직한 문장으로 품어줍니다.'
+      ]
+    },
+    {
+      title: '애도 일기',
+      author: '롤랑 바르트',
+      genre: '에세이',
+      intro: '어머니를 여읜 후 매일 쓴 절절하고 진솔한 슬픔의 기록입니다. 슬픔을 억지로 떨치지 않고 함께 머무르는 태도를 보여줍니다.',
+      forWhom: '소중한 존재를 떠나보내고 비탄에 잠긴 분께',
+      keywords: ['상실', '기록', '사랑'],
+      year: 2009,
+      reasons: [
+        '슬픔을 서둘러 지우려 하지 않고 고요히 함께 머무르며 위로해 줍니다.'
+      ]
+    },
+    {
+      title: '작별인사',
+      author: '김영하',
+      genre: '소설',
+      intro: '존재의 유한함 속에서 이별을 맞이하며 그럼에도 살아간다는 것의 무게를 묻는 철학적 SF소설입니다.',
+      forWhom: '이별의 아픔을 통과하고 있는 분께',
+      keywords: ['이별', '존재', '생명'],
+      year: 2022,
+      reasons: [
+        '눈물 속에서도 삶의 존귀함을 느끼게 해주는 따뜻한 작별의 책입니다.'
+      ]
+    }
+  ],
+  후회: [
+    {
+      title: '미드나잇 라이브러리',
+      author: '매트 헤이그',
+      genre: '소설',
+      intro: '선택하지 않은 무수한 인생들을 살아볼 수 있는 자정의 도서관에서 펼쳐지는 삶의 긍정기입니다. 과거의 미련을 지워냅니다.',
+      forWhom: '‘그때 다른 선택을 했더라면’ 하고 자책하는 분께',
+      keywords: ['선택', '가능성', '현재'],
+      year: 2020,
+      reasons: [
+        '과거의 선택에 얽매인 마음에 지금 나의 삶이 가장 빛난다는 사실을 깨닫게 합니다.'
+      ]
+    },
+    {
+      title: '지금 알고 있는 걸 그때도 알았더라면',
+      author: '류시화 엮음',
+      genre: '시집',
+      intro: '인생의 시행착오와 후회를 먼저 건너간 이들의 지혜가 담긴 잠언 시집입니다. 부족했던 과거의 나를 너그럽게 안아줍니다.',
+      forWhom: '지나간 시간에 대한 회한으로 가슴이 먹먹한 분께',
+      keywords: ['지혜', '성찰', '치유'],
+      year: 1998,
+      reasons: [
+        '서툴렀던 지난날의 나를 따뜻하게 용서하고 품어주는 시의 힘을 전합니다.'
+      ]
+    },
+    {
+      title: '나미야 잡화점의 기적',
+      author: '히가시노 게이고',
+      genre: '소설',
+      intro: '과거와 현재를 잇는 편지를 통해 후회 어린 선택들을 보듬고 기적 같은 답을 찾아가는 감동 미스터리 소설입니다.',
+      forWhom: '인생의 갈림길에서 후회했던 기억이 맴도는 분께',
+      keywords: ['고민상담', '기적', '인연'],
+      year: 2012,
+      reasons: [
+        '후회되는 선택조차도 인생의 뜻깊은 지도가 될 수 있음을 보여줍니다.'
+      ]
+    }
+  ],
+  무기력: [
+    {
+      title: '아무것도 하지 않는 시간의 힘',
+      author: '울리히 슈나벨',
+      genre: '인문/교양',
+      intro: '끊임없이 무언가를 해야 한다는 강박에서 벗어나 게으름과 무위(無爲)가 주는 창조적 힘을 밝힙니다.',
+      forWhom: '손가락 하나 까딱하기 싫고 모든 의욕이 사라진 분께',
+      keywords: ['휴식', '여백', '재충전'],
+      year: 2011,
+      reasons: [
+        '무기력은 고장 난 것이 아니라 몸과 마음이 쉬어가라는 자연스러운 신호임을 알립니다.'
+      ]
+    },
+    {
+      title: '달러구트 꿈 백화점',
+      author: '이미예',
+      genre: '판타지소설',
+      intro: '잠든 이들에게 따스하고 신비로운 꿈을 파는 백화점 이야기입니다. 지친 현실에서 잠시 벗어나 포근한 꿈속으로 초대합니다.',
+      forWhom: '아무것도 하기 싫고 그저 푹 쉬고 싶은 분께',
+      keywords: ['꿈', '휴식', '환상'],
+      year: 2020,
+      reasons: [
+        '의욕을 강요하지 않고 조용히 곁에 누워 포근한 휴식을 건네줍니다.'
+      ]
+    },
+    {
+      title: '보노보노처럼 살다니 다행이야',
+      author: '김신회',
+      genre: '에세이',
+      intro: '느릿느릿하고 서툴러도 묵묵히 하루를 살아가는 만화 속 보노보노의 다정한 철학을 담은 에세이입니다.',
+      forWhom: '남들처럼 부지런하지 못해 자책하는 분께',
+      keywords: ['느림', '위로', '평범함'],
+      year: 2017,
+      reasons: [
+        '천천히 걸어도, 아무것도 안 해도 괜찮다는 무해한 안도감을 줍니다.'
+      ]
+    }
+  ],
+  기쁨: [
+    {
+      title: '꽃을 보듯 너를 본다',
+      author: '나태주',
+      genre: '시집',
+      intro: '풀꽃처럼 소박하고 순수한 시선으로 일상의 기쁨과 사랑을 노래한 국민 애송 시집입니다.',
+      forWhom: '마음에 잔잔한 행복과 환한 기쁨이 솟아나는 분께',
+      keywords: ['행복', '다정함', '사랑'],
+      year: 2015,
+      reasons: [
+        '지금 느끼시는 기쁨과 설렘을 더 따뜻하고 풍성하게 채워줍니다.'
+      ]
+    },
+    {
+      title: '여행의 이유',
+      author: '김영하',
+      genre: '에세이',
+      intro: '우리가 떠나고 돌아오는 이유를 탐색하며 삶의 생기와 기쁨을 감각하게 돕는 매혹적인 산문집입니다.',
+      forWhom: '새로운 기운과 즐거운 생동감을 만끽하고 싶은 분께',
+      keywords: ['여행', '시선', '환대'],
+      year: 2019,
+      reasons: [
+        '새롭게 피어난 마음에 경쾌한 활력과 삶의 찬란한 순간을 선물합니다.'
+      ]
+    },
+    {
+      title: '행복의 기원',
+      author: '서은국',
+      genre: '심리/과학',
+      intro: '행복은 거창한 관념이 아니라 좋아하는 사람과 맛있는 음식을 먹는 구체적 쾌락임을 진화심리학으로 명쾌하게 밝힙니다.',
+      forWhom: '지금의 좋은 기분을 더 오래 만끽하고 싶은 분께',
+      keywords: ['행복', '쾌락', '일상'],
+      year: 2014,
+      reasons: [
+        '일상의 기쁨을 온전히 느끼고 누리는 통쾌하고 유쾌한 통찰을 선사합니다.'
+      ]
+    }
+  ]
+};
+
+export function recommendCuratedBooks(emotions: string[], count = 3): BookRecommendation[] {
+  const result: BookRecommendation[] = [];
+  const pickedTitles = new Set<string>();
+
+  const targetEmotions = emotions && emotions.length > 0 ? emotions : ['기쁨'];
+
+  for (const emo of targetEmotions) {
+    const list = BOOK_CATALOG[emo] || BOOK_CATALOG['우울'];
+    for (const b of list) {
+      if (pickedTitles.has(b.title)) continue;
+      pickedTitles.add(b.title);
+      const reason = b.reasons[Math.floor(Math.random() * b.reasons.length)];
+      result.push({
+        title: b.title,
+        author: b.author,
+        reason,
+        emotions: [emo],
+        genre: b.genre,
+        intro: b.intro,
+        forWhom: b.forWhom,
+        keywords: b.keywords,
+        year: b.year
+      });
+      if (result.length >= count) return result;
+    }
+  }
+
+  // If still need more
+  for (const key of Object.keys(BOOK_CATALOG)) {
+    const list = BOOK_CATALOG[key];
+    for (const b of list) {
+      if (pickedTitles.has(b.title)) continue;
+      pickedTitles.add(b.title);
+      result.push({
+        title: b.title,
+        author: b.author,
+        reason: b.reasons[0],
+        emotions: [key],
+        genre: b.genre,
+        intro: b.intro,
+        forWhom: b.forWhom,
+        keywords: b.keywords,
+        year: b.year
+      });
+      if (result.length >= count) return result;
+    }
+  }
+
+  return result.slice(0, count);
+}
+
+export function analyzeTextAndRecommend(text: string, count = 3): { status: string; emotion?: string; books?: BookRecommendation[] } {
+  const CRISIS_RE = /죽고\s?싶|죽어\s?버리|자살|자해|목숨을\s?끊|사라지고\s?싶/;
+  if (CRISIS_RE.test(text)) {
+    return { status: 'crisis' };
+  }
+
+  const clean = text.trim();
+  if (!clean || !/[가-힣A-Za-z]/.test(clean)) {
+    return { status: 'unclear' };
+  }
+
+  // Emotion keyword detection
+  const patterns: Array<{ emo: string; re: RegExp }> = [
+    { emo: '외로움', re: /외로|혼자|고독|쓸쓸|아무도|소외|남겨진/ },
+    { emo: '불안', re: /불안|걱정|두려|초조|떨려|어떡하|무서|긴장|조급/ },
+    { emo: '우울', re: /우울|답답|눈물|힘들|괴로|마음이 아파|막막/ },
+    { emo: '분노', re: /화나|짜증|분노|억울|열받|미워|빡치|속상/ },
+    { emo: '번아웃', re: /번아웃|지쳐|탈진|퇴사|일이 많아|쉬고 싶|야근|방전/ },
+    { emo: '설렘', re: /설레|기대|두근|좋아하|사랑|새로운|시작|희망/ },
+    { emo: '슬픔', re: /슬퍼|이별|울었|상실|헤어|그리워|보고 싶|먹먹/ },
+    { emo: '후회', re: /후회|그때 왜|잘못|돌아가고|바보|미련|되돌리/ },
+    { emo: '무기력', re: /무기력|아무것도 하기 싫|멍하|의욕|귀찮|가라앉|침대/ },
+    { emo: '기쁨', re: /기뻐|행복|즐거|신나|뿌듯|감사|웃음|홀가분/ }
+  ];
+
+  let detectedEmotion = '우울';
+  for (const p of patterns) {
+    if (p.re.test(clean)) {
+      detectedEmotion = p.emo;
+      break;
+    }
+  }
+
+  const books = recommendCuratedBooks([detectedEmotion], count);
+
+  return {
+    status: 'ok',
+    emotion: detectedEmotion,
+    books
+  };
+}
